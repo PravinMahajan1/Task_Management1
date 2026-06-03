@@ -162,9 +162,10 @@ export default function TaskForm({ initialValues, onSubmit, onCancel, availableA
             <Select
               labelId="task-assignee-label"
               id="task-assignee-select"
-              value={assigneeName}
+              value={availableAssignees.includes(assigneeName) ? assigneeName : (availableAssignees[0] || "")}
               onChange={(e) => setAssigneeName(e.target.value)}
               label="Assignee"
+              disabled={availableAssignees.length === 0}
             >
               {availableAssignees.map((name) => (
                 <MenuItem key={name} value={name}>

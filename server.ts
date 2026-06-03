@@ -3,14 +3,27 @@ import cors from "cors";
 import fs from "fs";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
+import { rateLimit } from "express-rate-limit";
 
 const app = express();
 const PORT = 3000;
 
-app.use(cors());
+const corsOptions = {
+  origin: process.env.NODE_ENV === "production" ? (process.env.ALLOWED_ORIGIN || "") : true,
+  credentials: true
+};
+app.use(cors(corsOptions));
 
-app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ limit: "50mb", extended: true }));
+app.use(express.json({ limit: "1mb" }));
+app.use(express.urlencoded({ limit: "1mb", extended: true }));
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 200, // Limit each IP to 200 requests per 15 minutes
+  standardHeaders: "draft-7",
+  legacyHeaders: false
+});
+app.use(limiter);
 
 const TASKS_FILE = path.join(process.cwd(), "tasks.json");
 
@@ -126,6 +139,14 @@ const registerTaskRoutes = (routePrefix: string) => {
       return res.status(400).json({ error: "Title is required and must be a string" });
     }
 
+    if (title.length > 200) {
+      return res.status(400).json({ error: "Title must be 200 characters or less" });
+    }
+
+    if (description && typeof description === "string" && description.length > 2000) {
+      return res.status(400).json({ error: "Description must be 2000 characters or less" });
+    }
+
     let taskPriority: TaskPriority = "Medium";
     if (priority === "Low" || priority === "Medium" || priority === "High") {
       taskPriority = priority;
@@ -174,10 +195,16 @@ const registerTaskRoutes = (routePrefix: string) => {
       if (typeof title !== "string" || !title.trim()) {
         return res.status(400).json({ error: "Title must be a non-empty string" });
       }
+      if (title.length > 200) {
+        return res.status(400).json({ error: "Title must be 200 characters or less" });
+      }
       updatedTask.title = title.trim();
     }
 
     if (description !== undefined) {
+      if (description && typeof description === "string" && description.length > 2000) {
+        return res.status(400).json({ error: "Description must be 2000 characters or less" });
+      }
       updatedTask.description = typeof description === "string" ? description.trim() : "";
     }
 
@@ -229,6 +256,10 @@ const registerTaskRoutes = (routePrefix: string) => {
 
     if (!text || typeof text !== "string" || !text.trim()) {
       return res.status(400).json({ error: "Comment text is required and must be a string" });
+    }
+
+    if (text.length > 1000) {
+      return res.status(400).json({ error: "Comment text must be 1000 characters or less" });
     }
 
     const tasks = readTasks();
@@ -304,6 +335,10 @@ const registerMemberRoutes = (routePrefix: string) => {
     const { name } = req.body;
     if (!name || typeof name !== "string" || !name.trim()) {
       return res.status(400).json({ error: "Member name is required" });
+    }
+
+    if (name.length > 100) {
+      return res.status(400).json({ error: "Member name must be 100 characters or less" });
     }
 
     const trimmedName = name.trim();

@@ -20,6 +20,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { motion, AnimatePresence } from "motion/react";
 
 import { Task, TaskStatus } from "../types";
+import { isTaskOverdue, formatDate, getAssigneeMeta } from "../utils/taskHelpers";
 
 interface TaskBoardViewProps {
   tasks: Task[];
@@ -35,49 +36,6 @@ const COLUMNS: { id: TaskStatus; label: string; color: string; bg: string; dot: 
   { id: "Completed", label: "Completed", color: "#16a34a", bg: "#dcfce7", dot: "#22c55e" },
   { id: "Launched", label: "Launched", color: "#2563eb", bg: "#dbeafe", dot: "#3b82f6" }
 ];
-
-function isTaskOverdue(dueDateStr: string, status: TaskStatus): boolean {
-  if (status === "Completed" || status === "Launched") return false;
-  if (!dueDateStr) return false;
-  try {
-    const today = new Date("2026-06-02");
-    const dueDate = new Date(dueDateStr);
-    return dueDate < today;
-  } catch {
-    return false;
-  }
-}
-
-function formatDate(dateStr: string): string {
-  if (!dateStr) return "";
-  try {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-  } catch {
-    return dateStr;
-  }
-}
-
-function getAssigneeMeta(name: string) {
-  const clean = name || "Aarav Sharma";
-  const parts = clean.split(" ");
-  const initials = parts.map(p => p[0]).join("").substring(0, 2).toUpperCase();
-
-  let sum = 0;
-  for (let i = 0; i < clean.length; i++) {
-    sum += clean.charCodeAt(i);
-  }
-  const colors = [
-    "#ec4899",
-    "#8b5cf6",
-    "#3b82f6",
-    "#10b981",
-    "#f59e0b",
-    "#06b6d4"
-  ];
-  const bg = colors[sum % colors.length];
-  return { initials, bg };
-}
 
 export default function TaskBoardView({
   tasks,
