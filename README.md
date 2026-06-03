@@ -12,6 +12,7 @@ A premium, modern, and highly interactive full-stack Task Manager application. F
 - **💬 Task Comments**: Add and delete written comments directly inside a task's details panel for team collaboration.
 - **⚙️ Sidebar Navigation**: A collapsible sidebar for project folders (Mock projects: Design Project, Landing Page) and workspaces.
 - **🔔 Real-time Feedback**: Toast notifications via Material UI Snackbars confirm every task creation, status transition, and comment modification.
+- **👥 Team Member Management**: Manage project assignees. Invite new team members dynamically, delete members (with active task assignment validation), and display initials-based colored avatars.
 
 ---
 
@@ -26,7 +27,31 @@ A premium, modern, and highly interactive full-stack Task Manager application. F
 | **Animations** | **Motion (framer-motion v12)** | Kanban layout shifts and spring transitions |
 | **HTTP Client** | **Axios** | Communicating with Express REST endpoints |
 | **Backend Framework** | **Node.js + Express** | Serving REST endpoints and the client-side SPA bundle |
-| **Data Storage** | **JSON File (`tasks.json`)** | Persistent storage for tasks |
+| **Data Storage** | **JSON Files (`tasks.json`, `members.json`)** | Persistent storage for tasks and team members |
+
+---
+
+## API Documentation
+
+The backend service exposes REST API endpoints for tasks, comments, and team members under `/api` (or directly `/` for compatibility).
+
+### Tasks API
+- `GET /api/tasks` - Retrieve all tasks.
+- `POST /api/tasks` - Create a new task.
+  - Constraints: `title` (required, max 200 chars), `description` (optional, max 2000 chars).
+- `PUT /api/tasks/:id` - Update an existing task.
+- `DELETE /api/tasks/:id` - Delete a task.
+
+### Comments API
+- `POST /api/tasks/:id/comments` - Add a comment to a task.
+  - Constraints: `text` (required, max 1000 chars).
+- `DELETE /api/tasks/:id/comments/:commentId` - Delete a comment.
+
+### Members API
+- `GET /api/members` - Retrieve all team members.
+- `POST /api/members` - Add a new team member.
+  - Constraints: `name` (required, max 100 chars).
+- `DELETE /api/members/:name` - Remove a team member.
 
 ---
 
@@ -64,62 +89,3 @@ Make sure you have [Node.js](https://nodejs.org/) installed.
 
 Because this is a full-stack application (an Express backend serving the React client bundle) utilizing local JSON files (`tasks.json`) for data storage, choose your hosting platform according to the guidelines below:
 
-### 🚀 Deploying on Render (Recommended)
-Render is ideal for stateful Node.js apps because it supports persistent disk mounts to keep the JSON database from resetting.
-
-1. Create a new **Web Service** on [Render](https://render.com/).
-2. Link your GitHub repository.
-3. Configure the service settings:
-   - **Runtime**: `Node`
-   - **Build Command**: `npm install && npm run build`
-   - **Start Command**: `node dist/server.cjs`
-4. Add the following **Environment Variables** in Render's dashboard:
-   - `NODE_ENV`: `production`
-5. **Persistent Disk (Optional but Recommended)**:
-   - To keep your task database persistent between server restarts, mount a Render Disk at `/data` and update your backend file writing path to save `tasks.json` in `/data/tasks.json`.
-
----
-
-### ⚡ Deploying on Vercel
-Vercel is serverless, making it excellent for rendering the frontend, but it uses ephemeral read-only filesystem environments (the `tasks.json` database resets periodically).
-
-#### Option A: Split Frontend & Backend (Recommended)
-1. **Backend**: Host the Express server on Render (following the steps above).
-2. **Frontend**: Deploy the React app to Vercel:
-   - Link your repo and choose **Vite** as the framework preset.
-   - Set the build settings to:
-     - **Build Command**: `npm run build`
-     - **Output Directory**: `dist`
-   - Add the environment variable:
-     - `VITE_API_URL`: `https://your-render-backend-url.onrender.com/api/tasks`
-
-#### Option B: Serverless Express Monorepo
-To deploy both the frontend and backend together on Vercel, create a `vercel.json` file in your root folder:
-
-```json
-{
-  "version": 2,
-  "builds": [
-    {
-      "src": "server.ts",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "server.ts"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
-  ]
-}
-```
-*Note: Due to the serverless execution model, changes made to `tasks.json` will be temporary and reset during cold restarts. For production Vercel apps, it is recommended to replace the JSON filesystem storage with an external database (e.g., MongoDB, PostgreSQL).*

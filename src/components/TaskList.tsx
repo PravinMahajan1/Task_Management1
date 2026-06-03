@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -12,7 +12,8 @@ import {
   Box,
   Typography,
   Avatar,
-  Tooltip
+  Tooltip,
+  TableSortLabel
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -24,6 +25,7 @@ import PendingActionsIcon from "@mui/icons-material/PendingActions";
 import InputIcon from "@mui/icons-material/Input";
 
 import { Task } from "../types";
+import { isTaskOverdue, formatDate, getAssigneeMeta } from "../utils/taskHelpers";
 
 interface TaskListProps {
   tasks: Task[];
@@ -31,43 +33,31 @@ interface TaskListProps {
   onDelete: (id: string) => void;
 }
 
-function isTaskOverdue(dueDateStr: string, status: string): boolean {
-  if (status === "Completed" || status === "Launched") return false;
-  if (!dueDateStr) return false;
-  try {
-    const today = new Date("2026-06-02");
-    const dueDate = new Date(dueDateStr);
-    return dueDate < today;
-  } catch {
-    return false;
-  }
-}
-
-function formatDate(dateStr: string): string {
-  if (!dateStr) return "No due date";
-  try {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-  } catch {
-    return dateStr;
-  }
-}
-
-function getAssigneeMeta(name: string) {
-  const clean = name || "Aarav Sharma";
-  const parts = clean.split(" ");
-  const initials = parts.map(p => p[0]).join("").substring(0, 2).toUpperCase();
-
-  let sum = 0;
-  for (let i = 0; i < clean.length; i++) {
-    sum += clean.charCodeAt(i);
-  }
-  const colors = ["#ec4899", "#8b5cf6", "#3b82f6", "#10b981", "#f59e0b", "#06b6d4"];
-  const bg = colors[sum % colors.length];
-  return { initials, bg };
-}
-
 export default function TaskList({ tasks, onEdit, onDelete }: TaskListProps) {
+  const [sortField, setSortField] = useState<"title" | "priority" | "status" | "dueDate" | null>(null);
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+
+  const handleSort = (field: typeof sortField) => {
+    if (sortField === field) {
+      setSortDir(d => d === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDir("asc");
+    }
+  };
+
+  const PRIORITY_ORDER = { High: 0, Medium: 1, Low: 2 };
+  const STATUS_ORDER = { Pending: 0, "In Progress": 1, Completed: 2, Launched: 3 };
+
+  const sortedTasks = [...tasks].sort((a, b) => {
+    if (!sortField) return 0;
+    let cmp = 0;
+    if (sortField === "title") cmp = a.title.localeCompare(b.title);
+    else if (sortField === "priority") cmp = PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority];
+    else if (sortField === "status") cmp = STATUS_ORDER[a.status] - STATUS_ORDER[b.status];
+    else if (sortField === "dueDate") cmp = (a.dueDate || "").localeCompare(b.dueDate || "");
+    return sortDir === "asc" ? cmp : -cmp;
+  });
   if (tasks.length === 0) {
     return (
       <Box
@@ -93,7 +83,7 @@ export default function TaskList({ tasks, onEdit, onDelete }: TaskListProps) {
     <>
 
       <Box sx={{ display: { xs: "flex", md: "none" }, flexDirection: "column", gap: 2 }}>
-        {tasks.map((task) => {
+        {sortedTasks.map((task) => {
           const isCompleted = task.status === "Completed" || task.status === "Launched";
           const mate = getAssigneeMeta(task.assigneeName);
           const isOverdue = isTaskOverdue(task.dueDate, task.status);
@@ -244,17 +234,49 @@ export default function TaskList({ tasks, onEdit, onDelete }: TaskListProps) {
       <Table aria-label="task list table" sx={{ minWidth: 700 }}>
         <TableHead sx={{ bgcolor: "#f8fafc" }}>
           <TableRow>
-            <TableCell sx={{ fontWeight: 700, color: "#475569" }}>Task Title</TableCell>
+            <TableCell sx={{ fontWeight: 700, color: "#475569" }}>
+              <TableSortLabel
+                active={sortField === "title"}
+                direction={sortField === "title" ? sortDir : "asc"}
+                onClick={() => handleSort("title")}
+              >
+                Task Title
+              </TableSortLabel>
+            </TableCell>
             <TableCell sx={{ fontWeight: 700, color: "#475569" }}>Description / Notes</TableCell>
-            <TableCell sx={{ fontWeight: 700, color: "#475569" }}>Priority</TableCell>
-            <TableCell sx={{ fontWeight: 700, color: "#475569" }}>Status Phase</TableCell>
-            <TableCell sx={{ fontWeight: 700, color: "#475569" }}>Due Date</TableCell>
+            <TableCell sx={{ fontWeight: 700, color: "#475569" }}>
+              <TableSortLabel
+                active={sortField === "priority"}
+                direction={sortField === "priority" ? sortDir : "asc"}
+                onClick={() => handleSort("priority")}
+              >
+                Priority
+              </TableSortLabel>
+            </TableCell>
+            <TableCell sx={{ fontWeight: 700, color: "#475569" }}>
+              <TableSortLabel
+                active={sortField === "status"}
+                direction={sortField === "status" ? sortDir : "asc"}
+                onClick={() => handleSort("status")}
+              >
+                Status Phase
+              </TableSortLabel>
+            </TableCell>
+            <TableCell sx={{ fontWeight: 700, color: "#475569" }}>
+              <TableSortLabel
+                active={sortField === "dueDate"}
+                direction={sortField === "dueDate" ? sortDir : "asc"}
+                onClick={() => handleSort("dueDate")}
+              >
+                Due Date
+              </TableSortLabel>
+            </TableCell>
             <TableCell sx={{ fontWeight: 700, color: "#475569" }}>Assignee</TableCell>
             <TableCell sx={{ fontWeight: 700, color: "#475569", textAlign: "right" }}>Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {tasks.map((task) => {
+          {sortedTasks.map((task) => {
             const isCompleted = task.status === "Completed" || task.status === "Launched";
             const mate = getAssigneeMeta(task.assigneeName);
             const isOverdue = isTaskOverdue(task.dueDate, task.status);

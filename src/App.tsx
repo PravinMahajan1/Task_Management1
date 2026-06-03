@@ -24,12 +24,12 @@ import {
   Avatar,
   Badge,
   Tooltip,
-  IconButton
+  IconButton,
+  Skeleton
 } from "@mui/material";
 
 import ViewWeekIcon from "@mui/icons-material/ViewWeek";
 import ListIcon from "@mui/icons-material/List";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import SearchIcon from "@mui/icons-material/Search";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import AddIcon from "@mui/icons-material/Add";
@@ -45,6 +45,7 @@ import TaskBoardView from "./components/TaskBoardView";
 import TaskModal from "./components/TaskModal";
 import { Task, TaskInput, TaskPriority, TaskStatus } from "./types";
 import { getAllTasks, createTask, updateTask, deleteTask, getAllMembers, addMember, deleteMember } from "./services/taskService";
+import { isTaskOverdue } from "./utils/taskHelpers";
 
 const INITIAL_MOCK_TASKS: Omit<Task, "id" | "completed">[] = [
   {
@@ -86,6 +87,7 @@ export default function App() {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -100,7 +102,6 @@ export default function App() {
 
   const [activeProjectId, setActiveProjectId] = useState("design");
   const [mainProjectExpanded, setMainProjectExpanded] = useState(true);
-  const [growthChannelsExpanded, setGrowthChannelsExpanded] = useState(true);
 
   const [activeWorkspace, setActiveWorkspace] = useState("OnPoint Studio");
 
@@ -118,6 +119,7 @@ export default function App() {
   const [teamMemberError, setTeamMemberError] = useState("");
 
   const fetchTasksData = async () => {
+    setIsLoading(true);
     try {
       setErrorMessage(null);
       const data = await getAllTasks();
@@ -143,6 +145,8 @@ export default function App() {
       }
     } catch (err: any) {
       setErrorMessage("Failed to load tasks from server.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -185,7 +189,7 @@ export default function App() {
       priority: "Medium",
       status: forcedStatus,
       dueDate: new Date().toISOString().slice(0, 10),
-      assigneeName: "Aarav Sharma"
+      assigneeName: members[0] || "Aarav Sharma"
     });
     setModalOpen(true);
   };
@@ -438,46 +442,6 @@ export default function App() {
               </Box>
             )}
 
-            <Box
-              onClick={() => setGrowthChannelsExpanded(!growthChannelsExpanded)}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                px: 1,
-                py: 0.5,
-                mt: 1.5,
-                borderRadius: "6px",
-                cursor: "pointer",
-                "&:hover": { bgcolor: "#f8fafc" }
-              }}
-            >
-              <Typography variant="caption" sx={{ fontWeight: 800, color: "#64748b", display: "flex", alignItems: "center", gap: 0.5 }}>
-                📁 Growth Channels
-              </Typography>
-               {growthChannelsExpanded ? <KeyboardArrowDownIcon sx={{ fontSize: 14, color: "#64748b" }} /> : <KeyboardArrowRightIcon sx={{ fontSize: 14, color: "#64748b" }} />}
-            </Box>
-
-            {growthChannelsExpanded && (
-              <Box
-                onClick={() => selectSidebarProject("landing", "Landing Page Redesign")}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 1.25,
-                  ml: 2,
-                  p: 1,
-                  borderRadius: "8px",
-                  bgcolor: activeProjectId === "landing" ? "#eef2ff" : "transparent",
-                  color: activeProjectId === "landing" ? "#4f46e5" : "#64748b",
-                  "&:hover": { bgcolor: "#f8fafc", cursor: "pointer" }
-                }}
-              >
-                <Typography variant="body2" sx={{ fontWeight: 600, fontSize: "13px" }}>
-                  🚀 Landing Page Redevelop
-                </Typography>
-              </Box>
-            )}
           </Box>
         </Box>
 
@@ -527,7 +491,7 @@ export default function App() {
 
         <Box
           sx={{
-            height: "64px",
+            height: "50px",
             bgcolor: "#ffffff",
             borderBottom: "1px solid #e2e8f0",
             display: "flex",
@@ -582,7 +546,7 @@ export default function App() {
           </Box>
         </Box>
 
-        <Container maxWidth="xl" sx={{ flexGrow: 1, py: { xs: 3, md: 4.5 }, px: { xs: 2, md: 4 } }}>
+        <Container maxWidth="xl" sx={{ flexGrow: 1, pt: { xs: 1.5, md: 2 }, pb: { xs: 3, md: 4 }, px: { xs: 2, md: 4 } }}>
 
           {errorMessage && (
             <MuiAlert
@@ -596,8 +560,20 @@ export default function App() {
           )}
 
           <>
-              <Box sx={{ borderBottom: "1px solid #e2e8f0", mb: 3, mt: 1, display: "flex", overflowX: "auto" }}>
-                <Box sx={{ display: "flex", gap: 1 }}>
+              <Box
+                sx={{
+                  borderBottom: "1px solid #e2e8f0",
+                  mb: 2,
+                  mt: 0,
+                  display: "flex",
+                  flexDirection: { xs: "column", md: "row" },
+                  justifyContent: "space-between",
+                  alignItems: { xs: "stretch", md: "center" },
+                  gap: 2,
+                  pb: { xs: 1.5, md: 0 }
+                }}
+              >
+                <Box sx={{ display: "flex", gap: 1, overflowX: "auto" }}>
 
                   <Box
                     onClick={() => navigate("/list")}
@@ -643,81 +619,47 @@ export default function App() {
                     <span>Board View</span>
                   </Box>
 
-                  <Box
-                    onClick={() => {
-                      navigate("/calendar");
-                      triggerNotification("Calendar loaded. Tasks synchronized onto active monthly grids.", "info");
-                    }}
-                    sx={{
-                      px: 2.5,
-                      py: 1.5,
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1,
-                      borderBottom: "2px solid",
-                      borderColor: location.pathname === "/calendar" ? "#6366f1" : "transparent",
-                      color: location.pathname === "/calendar" ? "#6366f1" : "#64748b",
-                      fontWeight: location.pathname === "/calendar" ? 700 : 500,
-                      fontSize: "14.5px",
-                      transition: "all 0.15s ease",
-                      whiteSpace: "nowrap"
-                    }}
-                  >
-                     <CalendarMonthIcon sx={{ fontSize: 16 }} />
-                    <span>Calendar</span>
-                  </Box>
                 </Box>
-              </Box>
 
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: { xs: "column", md: "row" },
-                  alignItems: { xs: "stretch", md: "center" },
-                  justifyContent: "space-between",
-                  mb: 3,
-                  gap: 2,
-                  p: 2,
-                  borderRadius: "12px",
-                  bgcolor: "#ffffff",
-                  border: "1px solid #e2e8f0"
-                }}
-              >
-                <Box sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 1.5 }}>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: "#64748b" }}>
-                     <TuneIcon sx={{ fontSize: 14 }} />
-                    <Typography variant="body2" sx={{ fontWeight: 600, fontSize: "13px" }}>Filters:</Typography>
-                  </Box>
-
-                  <FormControl size="small" sx={{ minWidth: 140 }}>
-                    <InputLabel id="p-filter-label" sx={{ fontSize: "13px" }}>Priority Filter</InputLabel>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    alignItems: "center",
+                    gap: 1.5,
+                    mb: { xs: 1.5, md: "2px" },
+                    mr: { xs: 0, md: 1.5 },
+                    alignSelf: { xs: "flex-start", md: "center" }
+                  }}
+                >
+                  <FormControl size="small" sx={{ minWidth: 120 }}>
+                    <InputLabel id="p-filter-label" sx={{ fontSize: "12px" }}>Priority</InputLabel>
                     <Select
                       labelId="p-filter-label"
                       id="p-filter"
                       value={priorityFilter}
                       onChange={(e) => setPriorityFilter(e.target.value)}
-                      label="Priority Filter"
-                      sx={{ borderRadius: "8px", fontSize: "13px" }}
+                      label="Priority"
+                      sx={{ borderRadius: "8px", fontSize: "12.5px", height: "34px" }}
                     >
                       <MenuItem value="All">All Priorities</MenuItem>
-                      <MenuItem value="Low">🟢 Low</MenuItem>
-                      <MenuItem value="Medium">🟡 Medium</MenuItem>
-                      <MenuItem value="High">🔴 High</MenuItem>
+                      <MenuItem value="Low">Low</MenuItem>
+                      <MenuItem value="Medium">Medium</MenuItem>
+                      <MenuItem value="High">High</MenuItem>
                     </Select>
                   </FormControl>
 
-                  <FormControl size="small" sx={{ minWidth: 160 }}>
-                    <InputLabel id="a-filter-label" sx={{ fontSize: "13px" }}>Assignee Filter</InputLabel>
+                  <FormControl size="small" sx={{ minWidth: 140 }}>
+                    <InputLabel id="a-filter-label" sx={{ fontSize: "12px" }}>Assignee</InputLabel>
                     <Select
                       labelId="a-filter-label"
                       id="a-filter"
                       value={assigneeFilter}
                       onChange={(e) => setAssigneeFilter(e.target.value)}
-                      label="Assignee Filter"
-                      sx={{ borderRadius: "8px", fontSize: "13px" }}
+                      label="Assignee"
+                      sx={{ borderRadius: "8px", fontSize: "12.5px", height: "34px" }}
                     >
-                      <MenuItem value="All">All Team Members</MenuItem>
+                      <MenuItem value="All">All Assignees</MenuItem>
                       {members.map((name) => (
                         <MenuItem key={name} value={name}>
                           {name}
@@ -736,208 +678,101 @@ export default function App() {
                         setSearchQuery("");
                         triggerNotification("Cleared all filtered values", "info");
                       }}
-                      sx={{ textTransform: "none", color: "#6366f1", fontWeight: 700, fontSize: "12.5px" }}
+                      sx={{ textTransform: "none", color: "#6366f1", fontWeight: 700, fontSize: "12px", p: 0 }}
                     >
-                      Reset Active Filters
+                      Reset
                     </Button>
                   )}
-                </Box>
 
-                <Typography variant="caption" sx={{ color: "#94a3b8", fontWeight: 600, fontSize: "11px", textAlign: { xs: "left", md: "right" } }}>
-                  Viewing {filteredTasks.length} out of {tasks.length} total project tasks.
-                </Typography>
+                  <Typography variant="caption" sx={{ color: "#94a3b8", fontWeight: 600, fontSize: "11px", ml: 1, display: { xs: "none", lg: "inline" } }}>
+                    ({filteredTasks.length}/{tasks.length} tasks)
+                  </Typography>
+                </Box>
               </Box>
 
-              <Routes>
-                <Route path="/" element={<Navigate to="/list" replace />} />
-                <Route path="/list" element={
-                  <TaskList
-                    tasks={filteredTasks}
-                    onEdit={handleOpenEditModal}
-                    onDelete={handleRequestDelete}
-                  />
-                } />
-                <Route path="/board" element={
-                  <TaskBoardView
-                    tasks={filteredTasks}
-                    onEdit={handleOpenEditModal}
-                    onDelete={handleRequestDelete}
-                    onUpdateStatus={handleUpdateTaskStatus}
-                    onAddTaskToStatus={handleOpenAddModalWithStatus}
-                  />
-                } />
-                <Route path="/calendar" element={
-                  <Box sx={{ p: 4, bgcolor: "#fff", borderRadius: "16px", border: "1px solid #e2e8f0", textAlign: "center" }}>
-                    <Typography variant="h6" className="font-display" sx={{ fontWeight: 700, color: "#1e293b", mb: 2 }}>
-                      📅 Current Timeline Display
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: { xs: "repeat(2, 1fr)", sm: "repeat(4, 1fr)" },
+                  gap: 1.5,
+                  mb: 3
+                }}
+              >
+                {[
+                  { label: "Total Tasks", count: tasks.length, color: "#6366f1", bg: "#eef2ff" },
+                  { label: "In Progress", count: tasks.filter(t => t.status === "In Progress").length, color: "#ca8a04", bg: "#fef9c3" },
+                  { label: "Overdue", count: tasks.filter(t => isTaskOverdue(t.dueDate, t.status)).length, color: "#ef4444", bg: "#fee2e2" },
+                  { label: "Completed", count: tasks.filter(t => t.status === "Completed" || t.status === "Launched").length, color: "#16a34a", bg: "#dcfce7" }
+                ].map((stat, idx) => (
+                  <Box
+                    key={idx}
+                    sx={{
+                      py: 1,
+                      px: 1.5,
+                      borderRadius: "10px",
+                      bgcolor: stat.bg,
+                      border: "1px solid",
+                      borderColor: `${stat.color}20`,
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 0.25
+                    }}
+                  >
+                    <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 600, fontSize: "11px" }}>
+                      {stat.label}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ maxWidth: "500px", mx: "auto", mb: 3 }}>
-                      All synchronized team milestones tracked within the active viewport calendar framework.
+                    <Typography variant="subtitle1" sx={{ fontWeight: 800, color: stat.color, fontFamily: "Space Grotesk, sans-serif", fontSize: "18px", lineHeight: 1.2 }}>
+                      {stat.count}
                     </Typography>
-
-                    <Box sx={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 1, maxW: "650px", mx: "auto" }}>
-                      {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
-                        <Box key={i} sx={{ fontWeight: "bold", py: 1, bgcolor: "#f1f5f9", borderRadius: "4px", fontSize: "14px", color: "#475569" }}>{d}</Box>
-                      ))}
-                      {Array.from({ length: 30 }).map((_, i) => {
-                        const dayNum = i + 1;
-                        const dayTasks = tasks.filter(t => t.dueDate && parseInt(t.dueDate.split("-")[2]) === dayNum);
-
-                        const doneTasks = dayTasks.filter(t => t.completed || t.status === "Completed" || t.status === "Launched");
-                        const pendingTasks = dayTasks.filter(t => !t.completed && t.status !== "Completed" && t.status !== "Launched");
-
-                        const highCount = dayTasks.filter(t => t.priority === "High").length;
-                        const medCount = dayTasks.filter(t => t.priority === "Medium").length;
-                        const lowCount = dayTasks.filter(t => t.priority === "Low").length;
-
-                        const tooltipTitle = (
-                          <Box sx={{ p: 0.5, minWidth: "200px" }}>
-                            <Typography variant="subtitle2" sx={{ fontWeight: "bold", borderBottom: "1px solid rgba(255,255,255,0.25)", pb: 0.5, mb: 1, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                              <span>June {dayNum} Overview</span>
-                              <span style={{ fontSize: "10px", opacity: 0.8 }}>({dayTasks.length} {dayTasks.length === 1 ? 'task' : 'tasks'})</span>
-                            </Typography>
-
-                            {dayTasks.length > 0 ? (
-                              <>
-
-                                <Box sx={{ mb: 1.5 }}>
-                                  <Typography variant="caption" sx={{ fontWeight: 700, color: "#94a3b8", display: "block", mb: 0.5, textTransform: "uppercase", fontSize: "9px" }}>
-                                    Priority Distribution
-                                  </Typography>
-                                  <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-                                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                                      <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: "#ef4444" }} />
-                                      <Typography variant="caption" sx={{ fontSize: "11px" }}>High: {highCount}</Typography>
-                                    </Box>
-                                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                                      <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: "#f59e0b" }} />
-                                      <Typography variant="caption" sx={{ fontSize: "11px" }}>Med: {medCount}</Typography>
-                                    </Box>
-                                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                                      <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: "#10b981" }} />
-                                      <Typography variant="caption" sx={{ fontSize: "11px" }}>Low: {lowCount}</Typography>
-                                    </Box>
-                                  </Box>
-                                </Box>
-
-                                <Box sx={{ mb: 1 }}>
-                                  <Typography variant="caption" sx={{ fontWeight: 700, color: "#94a3b8", display: "block", mb: 0.5, textTransform: "uppercase", fontSize: "9px" }}>
-                                    Completed ({doneTasks.length})
-                                  </Typography>
-                                  {doneTasks.length > 0 ? (
-                                    <ul style={{ margin: 0, paddingLeft: "12px", fontSize: "11px", listStyle: "disc" }}>
-                                      {doneTasks.map(t => (
-                                        <li key={t.id} style={{ marginBottom: "2px", textDecoration: "line-through", opacity: 0.75 }}>
-                                          {t.title}
-                                        </li>
-                                      ))}
-                                    </ul>
-                                  ) : (
-                                    <Typography variant="caption" sx={{ fontStyle: "italic", color: "#64748b", display: "block", pl: 0.5 }}>
-                                      None completed yet
-                                    </Typography>
-                                  )}
-                                </Box>
-
-                                <Box sx={{ mt: 1 }}>
-                                  <Typography variant="caption" sx={{ fontWeight: 700, color: "#94a3b8", display: "block", mb: 0.5, textTransform: "uppercase", fontSize: "9px" }}>
-                                    To-Do / Progress ({pendingTasks.length})
-                                  </Typography>
-                                  {pendingTasks.length > 0 ? (
-                                    <ul style={{ margin: 0, paddingLeft: "12px", fontSize: "11px", listStyle: "disc" }}>
-                                      {pendingTasks.map(t => (
-                                        <li key={t.id} style={{ marginBottom: "2px" }}>
-                                          {t.title}
-                                        </li>
-                                      ))}
-                                    </ul>
-                                  ) : (
-                                    <Typography variant="caption" sx={{ fontStyle: "italic", color: "#64748b", display: "block", pl: 0.5 }}>
-                                      No pending tasks!
-                                    </Typography>
-                                  )}
-                                </Box>
-                              </>
-                            ) : (
-                              <Typography variant="caption" sx={{ color: "#94a3b8", fontStyle: "italic", display: "block", textAlign: "center", py: 1 }}>
-                                No tasks scheduled
-                              </Typography>
-                            )}
-                          </Box>
-                        );
-
-                        return (
-                          <Tooltip
-                            key={i}
-                            title={tooltipTitle}
-                            arrow
-                            placement="top"
-                            slotProps={{
-                              tooltip: {
-                                sx: {
-                                  bgcolor: "#1e293b",
-                                  color: "#fff",
-                                  boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05)",
-                                  borderRadius: "8px",
-                                  p: 1.5,
-                                  maxWidth: 280,
-                                  border: "1px solid #334155"
-                                }
-                              },
-                              arrow: {
-                                sx: {
-                                  color: "#1e293b"
-                                }
-                              }
-                            }}
-                          >
-                            <Box sx={{
-                              p: { xs: 0.75, sm: 1.5 },
-                              border: "1px solid #f1f5f9",
-                              borderRadius: "8px",
-                              position: "relative",
-                              minHeight: { xs: "44px", sm: "65px" },
-                              cursor: "pointer",
-                              transition: "all 0.2s ease-in-out",
-                              "&:hover": {
-                                bgcolor: "#f8fafc",
-                                borderColor: "#cbd5e1",
-                                transform: "translateY(-1px)",
-                                boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)"
-                              }
-                            }}>
-                              <Typography variant="caption" sx={{ fontWeight: "bold", position: "absolute", top: { xs: 1, sm: 2 }, left: { xs: 2, sm: 4 }, fontSize: { xs: "10px", sm: "12px" } }}>
-                                {dayNum}
-                              </Typography>
-                              <Box sx={{ display: "flex", justifyContent: "center", gap: 0.5, flexWrap: "wrap", mt: { xs: 1.75, sm: 2.75 } }}>
-                                {dayTasks.map(t => {
-                                  let dotColor = "#6366f1";
-                                  if (t.priority === "High") dotColor = "#ef4444";
-                                  else if (t.priority === "Medium") dotColor = "#f59e0b";
-                                  else if (t.priority === "Low") dotColor = "#10b981";
-
-                                  return (
-                                    <Box
-                                      key={t.id}
-                                      sx={{
-                                        width: { xs: "4px", sm: "6px" },
-                                        height: { xs: "4px", sm: "6px" },
-                                        borderRadius: "50%",
-                                        bgcolor: dotColor,
-                                        boxShadow: "0 1px 2px rgba(0,0,0,0.1)"
-                                      }}
-                                    />
-                                  );
-                                })}
-                              </Box>
-                            </Box>
-                          </Tooltip>
-                        );
-                      })}
-                    </Box>
                   </Box>
-                } />
-              </Routes>
+                ))}
+              </Box>
+
+              {isLoading ? (
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}>
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Box
+                      key={i}
+                      sx={{
+                        p: 2,
+                        borderRadius: "12px",
+                        border: "1px solid #e2e8f0",
+                        bgcolor: "#ffffff",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 1
+                      }}
+                    >
+                      <Skeleton variant="text" width="40%" height={24} />
+                      <Skeleton variant="text" width="80%" height={20} />
+                      <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
+                        <Skeleton variant="text" width="20%" height={20} />
+                        <Skeleton variant="circular" width={24} height={24} />
+                      </Box>
+                    </Box>
+                  ))}
+                </Box>
+              ) : (
+                <Routes>
+                  <Route path="/" element={<Navigate to="/list" replace />} />
+                  <Route path="/list" element={
+                    <TaskList
+                      tasks={filteredTasks}
+                      onEdit={handleOpenEditModal}
+                      onDelete={handleRequestDelete}
+                    />
+                  } />
+                  <Route path="/board" element={
+                    <TaskBoardView
+                      tasks={filteredTasks}
+                      onEdit={handleOpenEditModal}
+                      onDelete={handleRequestDelete}
+                      onUpdateStatus={handleUpdateTaskStatus}
+                      onAddTaskToStatus={handleOpenAddModalWithStatus}
+                    />
+                  } />
+                </Routes>
+              )}
 
           </>
 
@@ -1033,6 +868,11 @@ export default function App() {
                     size="small"
                     color="error"
                     onClick={async () => {
+                      const hasActiveTasks = tasks.some(t => t.assigneeName === member && t.status !== "Completed" && t.status !== "Launched");
+                      if (hasActiveTasks) {
+                        const confirm = window.confirm(`Warning: ${member} has active tasks assigned. Are you sure you want to remove them?`);
+                        if (!confirm) return;
+                      }
                       try {
                         const updated = await deleteMember(member);
                         setMembers(updated);
