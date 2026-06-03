@@ -11,9 +11,11 @@ interface TaskModalProps {
   onSubmit: (formData: TaskInput) => void;
   task: Task | null;
   onTaskUpdated?: (updatedTask: Task) => void;
+  availableAssignees: string[];
+  onAddMember: (name: string) => Promise<void>;
 }
 
-export default function TaskModal({ open, onClose, onSubmit, task, onTaskUpdated }: TaskModalProps) {
+export default function TaskModal({ open, onClose, onSubmit, task, onTaskUpdated, availableAssignees, onAddMember }: TaskModalProps) {
 
   const isEditing = !!(task && task.id);
 
@@ -81,6 +83,8 @@ export default function TaskModal({ open, onClose, onSubmit, task, onTaskUpdated
                 }}
                 onSubmit={onSubmit}
                 onCancel={onClose}
+                availableAssignees={availableAssignees}
+                onAddMember={onAddMember}
               />
             </Box>
 
@@ -100,6 +104,8 @@ export default function TaskModal({ open, onClose, onSubmit, task, onTaskUpdated
               initialValues={null}
               onSubmit={onSubmit}
               onCancel={onClose}
+              availableAssignees={availableAssignees}
+              onAddMember={onAddMember}
             />
           </Box>
         )}

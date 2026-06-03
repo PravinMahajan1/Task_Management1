@@ -38,12 +38,13 @@ import HelpOutlineIcon from "@mui/icons-material/HelpOutlineOutlined";
 import MenuIcon from "@mui/icons-material/Menu";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 import TaskList from "./components/TaskList";
 import TaskBoardView from "./components/TaskBoardView";
 import TaskModal from "./components/TaskModal";
 import { Task, TaskInput, TaskPriority, TaskStatus } from "./types";
-import { getAllTasks, createTask, updateTask, deleteTask } from "./services/taskService";
+import { getAllTasks, createTask, updateTask, deleteTask, getAllMembers, addMember, deleteMember } from "./services/taskService";
 
 const INITIAL_MOCK_TASKS: Omit<Task, "id" | "completed">[] = [
   {
@@ -111,6 +112,11 @@ export default function App() {
 
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
+  const [members, setMembers] = useState<string[]>([]);
+  const [teamDialogOpen, setTeamDialogOpen] = useState(false);
+  const [newTeamMemberName, setNewTeamMemberName] = useState("");
+  const [teamMemberError, setTeamMemberError] = useState("");
+
   const fetchTasksData = async () => {
     try {
       setErrorMessage(null);
@@ -140,8 +146,23 @@ export default function App() {
     }
   };
 
+  const fetchMembersData = async () => {
+    try {
+      const data = await getAllMembers();
+      setMembers(data);
+    } catch (err) {
+      console.error("Failed to load members:", err);
+    }
+  };
+
+  const handleAddNewMember = async (name: string) => {
+    const updated = await addMember(name);
+    setMembers(updated);
+  };
+
   useEffect(() => {
     fetchTasksData();
+    fetchMembersData();
   }, []);
 
   const triggerNotification = (message: string, severity: "success" | "error" | "info" | "warning" = "success") => {
@@ -465,7 +486,7 @@ export default function App() {
             fullWidth
             variant="outlined"
             size="small"
-            onClick={() => triggerNotification("Team members invitation panel loaded.", "info")}
+            onClick={() => setTeamDialogOpen(true)}
             sx={{
               fontSize: "12px",
               textTransform: "none",
@@ -697,11 +718,11 @@ export default function App() {
                       sx={{ borderRadius: "8px", fontSize: "13px" }}
                     >
                       <MenuItem value="All">All Team Members</MenuItem>
-                      <MenuItem value="Ananya Patel">Ananya Patel</MenuItem>
-                      <MenuItem value="Aarav Sharma">Aarav Sharma</MenuItem>
-                      <MenuItem value="Harsha Reddy">Harsha Reddy</MenuItem>
-                      <MenuItem value="Manish Verma">Manish Verma</MenuItem>
-                      <MenuItem value="Chirag Mehta">Chirag Mehta</MenuItem>
+                      {members.map((name) => (
+                        <MenuItem key={name} value={name}>
+                          {name}
+                        </MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
 
@@ -933,6 +954,8 @@ export default function App() {
           setTasks((prev) => prev.map((t) => (t.id === updatedTask.id ? updatedTask : t)));
           setSelectedTask(updatedTask);
         }}
+        availableAssignees={members}
+        onAddMember={handleAddNewMember}
       />
 
       <Dialog
@@ -957,6 +980,142 @@ export default function App() {
           </Button>
           <Button onClick={handleConfirmDelete} variant="contained" color="error" autoFocus id="btn-confirm-delete" sx={{ textTransform: "none", borderRadius: "8px" }}>
             Delete Task
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={teamDialogOpen}
+        onClose={() => {
+          setTeamDialogOpen(false);
+          setNewTeamMemberName("");
+          setTeamMemberError("");
+        }}
+        fullWidth
+        maxWidth="xs"
+        slotProps={{ paper: { sx: { borderRadius: "16px", p: 1 } } }}
+      >
+        <DialogTitle sx={{ fontWeight: 700, fontFamily: "Space Grotesk, sans-serif", borderBottom: "1px solid #e2e8f0", pb: 2 }}>
+          Team Members
+        </DialogTitle>
+        <DialogContent sx={{ mt: 2 }}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, maxHeight: "250px", overflowY: "auto", mb: 3 }}>
+            {members.map((member) => {
+              const parts = member.split(" ");
+              const initials = parts.map(p => p[0]).join("").substring(0, 2).toUpperCase();
+              let sum = 0;
+              for (let i = 0; i < member.length; i++) sum += member.charCodeAt(i);
+              const colors = ["#ec4899", "#8b5cf6", "#3b82f6", "#10b981", "#f59e0b", "#06b6d4"];
+              const bg = colors[sum % colors.length];
+
+              return (
+                <Box
+                  key={member}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    p: 1,
+                    borderRadius: "8px",
+                    border: "1px solid #f1f5f9",
+                    bgcolor: "#f8fafc"
+                  }}
+                >
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
+                    <Avatar sx={{ width: 28, height: 28, fontSize: "11px", fontWeight: "bold", bgcolor: bg }}>
+                      {initials}
+                    </Avatar>
+                    <Typography variant="body2" sx={{ fontWeight: 600, color: "#1e293b" }}>
+                      {member}
+                    </Typography>
+                  </Box>
+                  <IconButton
+                    size="small"
+                    color="error"
+                    onClick={async () => {
+                      try {
+                        const updated = await deleteMember(member);
+                        setMembers(updated);
+                        triggerNotification(`Removed ${member} from team`, "info");
+                      } catch (err: any) {
+                        triggerNotification(err.response?.data?.error || "Failed to remove member", "error");
+                      }
+                    }}
+                    sx={{ p: 0.5 }}
+                  >
+                    <DeleteIcon sx={{ fontSize: 16 }} />
+                  </IconButton>
+                </Box>
+              );
+            })}
+          </Box>
+
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+            <Typography variant="caption" sx={{ fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              Add New Team Member
+            </Typography>
+            <Box sx={{ display: "flex", gap: 1 }}>
+              <TextField
+                size="small"
+                fullWidth
+                placeholder="e.g. Rahul Sharma"
+                value={newTeamMemberName}
+                onChange={(e) => {
+                  setNewTeamMemberName(e.target.value);
+                  if (e.target.value.trim()) setTeamMemberError("");
+                }}
+                error={!!teamMemberError}
+                helperText={teamMemberError}
+                slotProps={{ htmlInput: { style: { fontSize: "13px" } } }}
+              />
+              <Button
+                variant="contained"
+                size="small"
+                onClick={async () => {
+                  const name = newTeamMemberName.trim();
+                  if (!name) {
+                    setTeamMemberError("Name is required");
+                    return;
+                  }
+                  if (members.includes(name)) {
+                    setTeamMemberError("Member already exists");
+                    return;
+                  }
+                  try {
+                    const updated = await addMember(name);
+                    setMembers(updated);
+                    setNewTeamMemberName("");
+                    setTeamMemberError("");
+                    triggerNotification(`Added ${name} to team`, "success");
+                  } catch (err: any) {
+                    setTeamMemberError(err.response?.data?.error || "Failed to add member");
+                  }
+                }}
+                sx={{
+                  textTransform: "none",
+                  fontWeight: 700,
+                  bgcolor: "#6366f1",
+                  "&:hover": { bgcolor: "#4f46e5" },
+                  whiteSpace: "nowrap"
+                }}
+              >
+                Add
+              </Button>
+            </Box>
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button
+            onClick={() => {
+              setTeamDialogOpen(false);
+              setNewTeamMemberName("");
+              setTeamMemberError("");
+            }}
+            variant="outlined"
+            color="inherit"
+            sx={{ textTransform: "none", borderRadius: "8px" }}
+          >
+            Close
           </Button>
         </DialogActions>
       </Dialog>

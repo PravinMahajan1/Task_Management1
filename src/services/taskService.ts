@@ -37,6 +37,21 @@ export async function deleteComment(taskId: string, commentId: string): Promise<
   return response.data;
 }
 
+export async function getAllMembers(): Promise<string[]> {
+  const response = await axios.get<string[]>("/api/members");
+  return response.data;
+}
+
+export async function addMember(name: string): Promise<string[]> {
+  const response = await axios.post<string[]>("/api/members", { name });
+  return response.data;
+}
+
+export async function deleteMember(name: string): Promise<string[]> {
+  const response = await axios.delete<string[]>(`/api/members/${encodeURIComponent(name)}`);
+  return response.data;
+}
+
 export default {
   getAllTasks,
   createTask,
@@ -44,4 +59,7 @@ export default {
   deleteTask,
   addComment,
   deleteComment,
+  getAllMembers,
+  addMember,
+  deleteMember,
 };

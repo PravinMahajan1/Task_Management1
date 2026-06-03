@@ -6,7 +6,12 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions
 } from "@mui/material";
 import { TaskInput, TaskPriority, TaskStatus } from "../types";
 
@@ -14,43 +19,43 @@ interface TaskFormProps {
   initialValues?: TaskInput | null;
   onSubmit: (formData: TaskInput) => void;
   onCancel?: () => void;
+  availableAssignees: string[];
+  onAddMember: (name: string) => Promise<void>;
 }
 
-const AVAILABLE_ASSIGNEES = [
-  "Aarav Sharma",
-  "Ananya Patel",
-  "Chirag Mehta",
-  "Harsha Reddy",
-  "Manish Verma"
-];
-
-export default function TaskForm({ initialValues, onSubmit, onCancel }: TaskFormProps) {
+export default function TaskForm({ initialValues, onSubmit, onCancel, availableAssignees = [], onAddMember }: TaskFormProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState<TaskPriority>("Medium");
   const [status, setStatus] = useState<TaskStatus>("Pending");
   const [dueDate, setDueDate] = useState("");
-  const [assigneeName, setAssigneeName] = useState("Aarav Sharma");
+  const defaultAssignee = availableAssignees[0] || "Aarav Sharma";
+  const [assigneeName, setAssigneeName] = useState(defaultAssignee);
   const [error, setError] = useState("");
 
+  const [newMemberName, setNewMemberName] = useState("");
+  const [addMemberDialogOpen, setAddMemberDialogOpen] = useState(false);
+  const [addMemberError, setAddMemberError] = useState("");
+
   useEffect(() => {
+    const defAssignee = availableAssignees[0] || "Aarav Sharma";
     if (initialValues) {
       setTitle(initialValues.title || "");
       setDescription(initialValues.description || "");
       setPriority(initialValues.priority || "Medium");
       setStatus(initialValues.status || "Pending");
       setDueDate(initialValues.dueDate || new Date().toISOString().slice(0, 10));
-      setAssigneeName(initialValues.assigneeName || "Aarav Sharma");
+      setAssigneeName(initialValues.assigneeName || defAssignee);
     } else {
       setTitle("");
       setDescription("");
       setPriority("Medium");
       setStatus("Pending");
       setDueDate(new Date().toISOString().slice(0, 10));
-      setAssigneeName("Aarav Sharma");
+      setAssigneeName(defAssignee);
     }
     setError("");
-  }, [initialValues]);
+  }, [initialValues, availableAssignees]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -151,22 +156,39 @@ export default function TaskForm({ initialValues, onSubmit, onCancel }: TaskForm
           slotProps={{ inputLabel: { shrink: true } }}
         />
 
-        <FormControl fullWidth variant="outlined">
-          <InputLabel id="task-assignee-label">Assignee</InputLabel>
-          <Select
-            labelId="task-assignee-label"
-            id="task-assignee-select"
-            value={assigneeName}
-            onChange={(e) => setAssigneeName(e.target.value)}
-            label="Assignee"
+        <Box sx={{ display: "flex", gap: 1 }}>
+          <FormControl fullWidth variant="outlined">
+            <InputLabel id="task-assignee-label">Assignee</InputLabel>
+            <Select
+              labelId="task-assignee-label"
+              id="task-assignee-select"
+              value={assigneeName}
+              onChange={(e) => setAssigneeName(e.target.value)}
+              label="Assignee"
+            >
+              {availableAssignees.map((name) => (
+                <MenuItem key={name} value={name}>
+                  👤 {name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Button
+            id="btn-add-member-form"
+            variant="outlined"
+            onClick={() => setAddMemberDialogOpen(true)}
+            sx={{
+              textTransform: "none",
+              minWidth: "120px",
+              borderRadius: "8px",
+              borderColor: "#c7d2fe",
+              color: "#4f46e5",
+              "&:hover": { bgcolor: "#f5f3ff", borderColor: "#818cf8" }
+            }}
           >
-            {AVAILABLE_ASSIGNEES.map((name) => (
-              <MenuItem key={name} value={name}>
-                👤 {name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+            + Add Member
+          </Button>
+        </Box>
       </Box>
 
       <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1.5, mt: 1, borderTop: "1px solid #e2e8f0", pt: 2 }}>
@@ -195,6 +217,86 @@ export default function TaskForm({ initialValues, onSubmit, onCancel }: TaskForm
           {initialValues ? "Save Changes" : "Create Task"}
         </Button>
       </Box>
+
+      <Dialog
+        open={addMemberDialogOpen}
+        onClose={() => {
+          setAddMemberDialogOpen(false);
+          setNewMemberName("");
+          setAddMemberError("");
+        }}
+        slotProps={{ paper: { sx: { borderRadius: "12px", p: 1 } } }}
+      >
+        <DialogTitle sx={{ fontWeight: 700, fontFamily: "Space Grotesk, sans-serif" }}>Add New Team Member</DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ fontSize: "14px", mb: 2, color: "#475569" }}>
+            Type the name of the new member to add to the assignee list.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="new-member-name-input"
+            label="Member Name"
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={newMemberName}
+            onChange={(e) => {
+              setNewMemberName(e.target.value);
+              if (e.target.value.trim()) {
+                setAddMemberError("");
+              }
+            }}
+            error={!!addMemberError}
+            helperText={addMemberError}
+          />
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
+          <Button
+            onClick={() => {
+              setAddMemberDialogOpen(false);
+              setNewMemberName("");
+              setAddMemberError("");
+            }}
+            variant="outlined"
+            color="inherit"
+            sx={{ textTransform: "none", borderRadius: "8px" }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={async () => {
+              const name = newMemberName.trim();
+              if (!name) {
+                setAddMemberError("Name is required");
+                return;
+              }
+              if (availableAssignees.includes(name)) {
+                setAddMemberError("Member already exists");
+                return;
+              }
+              try {
+                await onAddMember(name);
+                setAssigneeName(name);
+                setAddMemberDialogOpen(false);
+                setNewMemberName("");
+                setAddMemberError("");
+              } catch (err: any) {
+                setAddMemberError(err.response?.data?.error || "Failed to add member");
+              }
+            }}
+            variant="contained"
+            sx={{
+              textTransform: "none",
+              borderRadius: "8px",
+              bgcolor: "#6366f1",
+              "&:hover": { bgcolor: "#4f46e5" }
+            }}
+          >
+            Add Member
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

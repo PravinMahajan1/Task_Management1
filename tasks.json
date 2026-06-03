@@ -11,17 +11,6 @@
     "comments": []
   },
   {
-    "id": "14befe9b-1ad3-4ffb-8329-e2fd718bbced",
-    "title": "Order Flow Architecture",
-    "description": "Map user states and transition paths across premium API products.",
-    "completed": false,
-    "priority": "High",
-    "status": "In Progress",
-    "dueDate": "2026-06-01",
-    "assigneeName": "Aarav Sharma",
-    "comments": []
-  },
-  {
     "id": "bac6e8fd-bc6a-4191-9c8a-2cb3f8f6130c",
     "title": "Order Flow Architecture",
     "description": "Map user states and transition paths across premium API products.",

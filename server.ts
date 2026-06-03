@@ -81,6 +81,37 @@ function writeTasks(tasks: Task[]): void {
   }
 }
 
+const MEMBERS_FILE = path.join(process.cwd(), "members.json");
+const DEFAULT_MEMBERS = [
+  "Aarav Sharma",
+  "Ananya Patel",
+  "Chirag Mehta",
+  "Harsha Reddy",
+  "Manish Verma"
+];
+
+if (!fs.existsSync(MEMBERS_FILE)) {
+  fs.writeFileSync(MEMBERS_FILE, JSON.stringify(DEFAULT_MEMBERS, null, 2), "utf8");
+}
+
+function readMembers(): string[] {
+  try {
+    const data = fs.readFileSync(MEMBERS_FILE, "utf8");
+    return JSON.parse(data);
+  } catch (err) {
+    console.error("Error reading members file:", err);
+    return DEFAULT_MEMBERS;
+  }
+}
+
+function writeMembers(members: string[]): void {
+  try {
+    fs.writeFileSync(MEMBERS_FILE, JSON.stringify(members, null, 2), "utf8");
+  } catch (err) {
+    console.error("Error writing to members file:", err);
+  }
+}
+
 const registerTaskRoutes = (routePrefix: string) => {
 
   app.get(`${routePrefix}`, (req, res) => {
@@ -263,8 +294,48 @@ const registerTaskRoutes = (routePrefix: string) => {
   });
 };
 
+const registerMemberRoutes = (routePrefix: string) => {
+  app.get(`${routePrefix}`, (req, res) => {
+    const members = readMembers();
+    res.status(200).json(members);
+  });
+
+  app.post(`${routePrefix}`, (req, res) => {
+    const { name } = req.body;
+    if (!name || typeof name !== "string" || !name.trim()) {
+      return res.status(400).json({ error: "Member name is required" });
+    }
+
+    const trimmedName = name.trim();
+    const members = readMembers();
+    if (members.includes(trimmedName)) {
+      return res.status(400).json({ error: "Member already exists" });
+    }
+
+    members.push(trimmedName);
+    writeMembers(members);
+    res.status(201).json(members);
+  });
+
+  app.delete(`${routePrefix}/:name`, (req, res) => {
+    const { name } = req.params;
+    const members = readMembers();
+    const index = members.indexOf(name);
+    if (index === -1) {
+      return res.status(404).json({ error: "Member not found" });
+    }
+
+    members.splice(index, 1);
+    writeMembers(members);
+    res.status(200).json(members);
+  });
+};
+
 registerTaskRoutes("/api/tasks");
 registerTaskRoutes("/tasks");
+
+registerMemberRoutes("/api/members");
+registerMemberRoutes("/members");
 
 async function startServer() {
   if (process.env.NODE_ENV !== "production") {
