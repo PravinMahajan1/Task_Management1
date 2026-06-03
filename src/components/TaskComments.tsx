@@ -13,6 +13,7 @@ import SendIcon from "@mui/icons-material/Send";
 import ChatIcon from "@mui/icons-material/Chat";
 import { Task } from "../types";
 import { addComment, deleteComment } from "../services/taskService";
+import { getAssigneeMeta, formatDateTime } from "../utils/taskHelpers";
 
 interface TaskCommentsProps {
   task: Task;
@@ -61,6 +62,7 @@ export default function TaskComments({ task, onTaskUpdated }: TaskCommentsProps)
   };
 
   const activeComments = task.comments || [];
+  const mate = getAssigneeMeta(task.assigneeName);
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%", gap: 2, p: 1.5 }}>
@@ -109,17 +111,17 @@ export default function TaskComments({ task, onTaskUpdated }: TaskCommentsProps)
             >
               <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center" }}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <Avatar sx={{ width: 22, height: 22, fontSize: "10px", bgcolor: "#64748b" }}>
-                    💬
+                  <Avatar sx={{ width: 22, height: 22, fontSize: "10px", bgcolor: mate.bg }}>
+                    {mate.initials}
                   </Avatar>
                   <Typography variant="caption" sx={{ fontWeight: 700, color: "#475569" }}>
-                    Project Member
+                    {task.assigneeName}
                   </Typography>
                 </Box>
 
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                   <Typography variant="caption" sx={{ color: "#94a3b8", fontSize: "10px" }}>
-                    {new Date(comment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    {formatDateTime(comment.createdAt)}
                   </Typography>
 
                   <IconButton

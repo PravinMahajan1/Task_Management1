@@ -3,9 +3,9 @@
     "id": "0691ecf8-b4c0-41f1-a1d0-ae445b987656",
     "title": "Solutions Pages",
     "description": "Design the checkout flow and alternative pricing layouts for enterprise clients.",
-    "completed": false,
+    "completed": true,
     "priority": "Low",
-    "status": "Pending",
+    "status": "Launched",
     "dueDate": "2026-06-17",
     "assigneeName": "Ananya Patel",
     "comments": []
@@ -14,9 +14,9 @@
     "id": "bac6e8fd-bc6a-4191-9c8a-2cb3f8f6130c",
     "title": "Order Flow Architecture",
     "description": "Map user states and transition paths across premium API products.",
-    "completed": true,
+    "completed": false,
     "priority": "High",
-    "status": "Completed",
+    "status": "Pending",
     "dueDate": "2026-06-01",
     "assigneeName": "Aarav Sharma",
     "comments": []
@@ -25,9 +25,9 @@
     "id": "e0959523-3c2e-4baf-8434-79dcaee4c876",
     "title": "About Us Illustration",
     "description": "Beautiful line art of team members collaborating in workspace.",
-    "completed": true,
+    "completed": false,
     "priority": "Medium",
-    "status": "Completed",
+    "status": "In Progress",
     "dueDate": "2026-06-17",
     "assigneeName": "Harsha Reddy",
     "comments": []
@@ -41,17 +41,6 @@
     "status": "Launched",
     "dueDate": "2026-06-25",
     "assigneeName": "Manish Verma",
-    "comments": []
-  },
-  {
-    "id": "62dcfdd7-a5e9-4ce2-862e-b7da4a9d6f4a",
-    "title": "aa",
-    "description": "aa",
-    "completed": false,
-    "priority": "Medium",
-    "status": "Pending",
-    "dueDate": "2026-06-03",
-    "assigneeName": "Aarav Sharma",
     "comments": []
   }
 ]
