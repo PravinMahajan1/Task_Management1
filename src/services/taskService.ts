@@ -1,0 +1,47 @@
+import axios from "axios";
+import { Task, TaskInput } from "../types";
+
+const BASE_URL = (import.meta as any).env.VITE_API_URL || "/api/tasks";
+
+const api = axios.create({
+  baseURL: BASE_URL,
+});
+
+export async function getAllTasks(): Promise<Task[]> {
+  const response = await api.get<Task[]>("");
+  return response.data;
+}
+
+export async function createTask(data: TaskInput): Promise<Task> {
+  const response = await api.post<Task>("", data);
+  return response.data;
+}
+
+export async function updateTask(id: string, data: Partial<TaskInput>): Promise<Task> {
+  const response = await api.put<Task>(`/${id}`, data);
+  return response.data;
+}
+
+export async function deleteTask(id: string): Promise<any> {
+  const response = await api.delete<any>(`/${id}`);
+  return response.data;
+}
+
+export async function addComment(taskId: string, text: string): Promise<{ comment: any; task: Task }> {
+  const response = await api.post<{ comment: any; task: Task }>(`/${taskId}/comments`, { text });
+  return response.data;
+}
+
+export async function deleteComment(taskId: string, commentId: string): Promise<{ success: boolean; task: Task }> {
+  const response = await api.delete<{ success: boolean; task: Task }>(`/${taskId}/comments/${commentId}`);
+  return response.data;
+}
+
+export default {
+  getAllTasks,
+  createTask,
+  updateTask,
+  deleteTask,
+  addComment,
+  deleteComment,
+};
