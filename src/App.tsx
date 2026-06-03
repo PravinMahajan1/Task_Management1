@@ -3,13 +3,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/tasks.css";
 import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 
-import { 
-  Button, 
-  Snackbar, 
-  Alert as MuiAlert, 
-  Container, 
-  Box, 
-  Typography, 
+import {
+  Button,
+  Snackbar,
+  Alert as MuiAlert,
+  Container,
+  Box,
+  Typography,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -44,8 +44,6 @@ import TaskBoardView from "./components/TaskBoardView";
 import TaskModal from "./components/TaskModal";
 import { Task, TaskInput, TaskPriority, TaskStatus } from "./types";
 import { getAllTasks, createTask, updateTask, deleteTask } from "./services/taskService";
-
-
 
 const INITIAL_MOCK_TASKS: Omit<Task, "id" | "completed">[] = [
   {
@@ -91,44 +89,34 @@ export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
 
-
-
-  // Filter States
   const [searchQuery, setSearchQuery] = useState("");
   const [priorityFilter, setPriorityFilter] = useState<string>("All");
   const [assigneeFilter, setAssigneeFilter] = useState<string>("All");
 
-  // Dynamic Project Customization
   const [projectName, setProjectName] = useState("Design Project");
   const [isEditingProjectName, setIsEditingProjectName] = useState(false);
   const [newProjectNameInput, setNewProjectNameInput] = useState("Design Project");
 
-  // Selected Sidebar Project folder mockup
   const [activeProjectId, setActiveProjectId] = useState("design");
   const [mainProjectExpanded, setMainProjectExpanded] = useState(true);
   const [growthChannelsExpanded, setGrowthChannelsExpanded] = useState(true);
 
-  // Active Workspace mockup slider
   const [activeWorkspace, setActiveWorkspace] = useState("OnPoint Studio");
 
-  // Responsive Mobile Sidebar Toggle
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
-  // Snackbar states
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error" | "info" | "warning">("success");
 
-  // Delete Confirmation Dialog state
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
-  // Load and seed tasks if empty
   const fetchTasksData = async () => {
     try {
       setErrorMessage(null);
       const data = await getAllTasks();
       if (data.length === 0) {
-        // Automatically seed with default mock items if backend database is blank
+
         const seeded: Task[] = [];
         for (const mock of INITIAL_MOCK_TASKS) {
           const tInput: TaskInput = {
@@ -191,17 +179,16 @@ export default function App() {
     setSelectedTask(null);
   };
 
-  // Submit hander
   const handleModalSubmit = async (formData: TaskInput) => {
     try {
       setErrorMessage(null);
       if (selectedTask && selectedTask.id) {
-        // Edit mode
+
         const updated = await updateTask(selectedTask.id, formData);
         setTasks((prev) => prev.map((t) => (t.id === selectedTask.id ? updated : t)));
         triggerNotification("Task details updated successfully", "success");
       } else {
-        // Create mode
+
         const created = await createTask(formData);
         setTasks((prev) => [...prev, created]);
         triggerNotification("Task added successfully", "success");
@@ -215,7 +202,6 @@ export default function App() {
     }
   };
 
-  // Advanced update status directly (moving cards across Board columns)
   const handleUpdateTaskStatus = async (id: string, newStatus: TaskStatus) => {
     try {
       const taskToChange = tasks.find((t) => t.id === id);
@@ -235,12 +221,10 @@ export default function App() {
     }
   };
 
-  // Open delete confirmation modal
   const handleRequestDelete = (id: string) => {
     setDeleteId(id);
   };
 
-  // Confirm delete handler
   const handleConfirmDelete = async () => {
     if (!deleteId) return;
     try {
@@ -255,7 +239,6 @@ export default function App() {
     }
   };
 
-  // Save renamed Project Title
   const handleSaveProjectName = () => {
     if (newProjectNameInput.trim()) {
       setProjectName(newProjectNameInput.trim());
@@ -264,7 +247,6 @@ export default function App() {
     }
   };
 
-  // Sidebar dynamic navigation presets
   const selectSidebarProject = (projId: string, projTitle: string) => {
     setActiveProjectId(projId);
     setProjectName(projTitle);
@@ -272,16 +254,15 @@ export default function App() {
     setMobileSidebarOpen(false);
   };
 
-  // Filter mechanics
   const filteredTasks = tasks.filter((task) => {
-    const matchesSearch = 
-      task.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    const matchesSearch =
+      task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       task.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesPriority = 
+    const matchesPriority =
       priorityFilter === "All" || task.priority === priorityFilter;
 
-    const matchesAssignee = 
+    const matchesAssignee =
       assigneeFilter === "All" || task.assigneeName === assigneeFilter;
 
     return matchesSearch && matchesPriority && matchesAssignee;
@@ -290,7 +271,6 @@ export default function App() {
   return (
     <Box sx={{ minHeight: "100vh", display: "flex", bgcolor: "#f8fafc" }}>
 
-      {/* LEFT SIDEBAR (Desktop: static, Mobile: overlay drawer) */}
       <Box
         className={`custom-sidebar-container ${mobileSidebarOpen ? "show-mobile" : ""}`}
         sx={{
@@ -309,10 +289,10 @@ export default function App() {
           boxShadow: { xs: mobileSidebarOpen ? "4px 0 24px rgba(15, 23, 42, 0.15)" : "none", md: "none" }
         }}
       >
-        {/* Sidebar Header Block */}
+
         <Box sx={{ p: 2.5, display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid #f1f5f9" }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
-            {/* Visual Logo Hexagon shape */}
+
             <Box sx={{ width: 32, height: 32, bgcolor: "#6366f1", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>
               <Typography variant="body1" sx={{ fontWeight: 800, fontSize: "15px", fontFamily: "Space Grotesk, sans-serif" }}>T</Typography>
             </Box>
@@ -321,8 +301,7 @@ export default function App() {
             </Typography>
           </Box>
 
-          {/* Close drawer button for Mobile viewers */}
-          <Button 
+          <Button
             onClick={() => setMobileSidebarOpen(false)}
             sx={{ display: { xs: "inline-flex", md: "none" }, minWidth: 0, p: 0.5, color: "#64748b" }}
           >
@@ -330,22 +309,21 @@ export default function App() {
           </Button>
         </Box>
 
-        {/* Workspace selector */}
         <Box sx={{ px: 2.5, py: 2 }}>
-          <Box 
-            sx={{ 
-              display: "flex", 
-              alignItems: "center", 
-              justifyContent: "space-between", 
-              p: 1.25, 
-              borderRadius: "12px", 
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              p: 1.25,
+              borderRadius: "12px",
               bgcolor: "#f8fafc",
               border: "1px solid #e2e8f0"
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
-              <Avatar 
-                variant="rounded" 
+              <Avatar
+                variant="rounded"
                 sx={{ width: 24, height: 24, fontSize: "11px", fontWeight: "bold", bgcolor: "#dbeafe", color: "#2563eb" }}
               >
                 O
@@ -382,13 +360,13 @@ export default function App() {
         </Box>
 
         <Box sx={{ px: 2, flexGrow: 1, overflowY: "auto" }}>
-          <Typography 
-            variant="caption" 
-            sx={{ 
-              px: 1, 
-              fontWeight: 800, 
-              color: "#94a3b8", 
-              textTransform: "uppercase", 
+          <Typography
+            variant="caption"
+            sx={{
+              px: 1,
+              fontWeight: 800,
+              color: "#94a3b8",
+              textTransform: "uppercase",
               letterSpacing: "0.05em",
               display: "block",
               mb: 1
@@ -398,13 +376,13 @@ export default function App() {
           </Typography>
 
           <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
-            <Box 
+            <Box
               onClick={() => setMainProjectExpanded(!mainProjectExpanded)}
-              sx={{ 
-                display: "flex", 
-                alignItems: "center", 
+              sx={{
+                display: "flex",
+                alignItems: "center",
                 justifyContent: "space-between",
-                px: 1, 
+                px: 1,
                 py: 0.5,
                 mt: 0.5,
                 borderRadius: "6px",
@@ -419,15 +397,15 @@ export default function App() {
             </Box>
 
             {mainProjectExpanded && (
-              <Box 
+              <Box
                 onClick={() => selectSidebarProject("design", "Design Project")}
-                sx={{ 
-                  display: "flex", 
-                  alignItems: "center", 
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
                   gap: 1.25,
                   ml: 2,
-                  p: 1, 
-                  borderRadius: "8px", 
+                  p: 1,
+                  borderRadius: "8px",
                   bgcolor: activeProjectId === "design" ? "#eef2ff" : "transparent",
                   color: activeProjectId === "design" ? "#4f46e5" : "#64748b",
                   "&:hover": { bgcolor: "#f8fafc", cursor: "pointer" }
@@ -439,13 +417,13 @@ export default function App() {
               </Box>
             )}
 
-            <Box 
+            <Box
               onClick={() => setGrowthChannelsExpanded(!growthChannelsExpanded)}
-              sx={{ 
-                display: "flex", 
-                alignItems: "center", 
+              sx={{
+                display: "flex",
+                alignItems: "center",
                 justifyContent: "space-between",
-                px: 1, 
+                px: 1,
                 py: 0.5,
                 mt: 1.5,
                 borderRadius: "6px",
@@ -460,15 +438,15 @@ export default function App() {
             </Box>
 
             {growthChannelsExpanded && (
-              <Box 
+              <Box
                 onClick={() => selectSidebarProject("landing", "Landing Page Redesign")}
-                sx={{ 
-                  display: "flex", 
-                  alignItems: "center", 
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
                   gap: 1.25,
                   ml: 2,
-                  p: 1, 
-                  borderRadius: "8px", 
+                  p: 1,
+                  borderRadius: "8px",
                   bgcolor: activeProjectId === "landing" ? "#eef2ff" : "transparent",
                   color: activeProjectId === "landing" ? "#4f46e5" : "#64748b",
                   "&:hover": { bgcolor: "#f8fafc", cursor: "pointer" }
@@ -483,14 +461,14 @@ export default function App() {
         </Box>
 
         <Box sx={{ p: 2, borderTop: "1px solid #f1f5f9", display: "flex", gap: 1 }}>
-          <Button 
-            fullWidth 
-            variant="outlined" 
+          <Button
+            fullWidth
+            variant="outlined"
             size="small"
             onClick={() => triggerNotification("Team members invitation panel loaded.", "info")}
-            sx={{ 
-              fontSize: "12px", 
-              textTransform: "none", 
+            sx={{
+              fontSize: "12px",
+              textTransform: "none",
               borderRadius: "8px",
               color: "#4f46e5",
               borderColor: "#c7d2fe",
@@ -499,8 +477,8 @@ export default function App() {
           >
             Invite Team
           </Button>
-          <Button 
-            variant="text" 
+          <Button
+            variant="text"
             size="small"
             onClick={() => triggerNotification("Help guide & quick-start manuals loaded.", "info")}
             sx={{ minWidth: 40, p: 0.5, color: "#64748b" }}
@@ -511,7 +489,7 @@ export default function App() {
       </Box>
 
       {mobileSidebarOpen && (
-        <Box 
+        <Box
           onClick={() => setMobileSidebarOpen(false)}
           sx={{
             position: "fixed",
@@ -525,15 +503,15 @@ export default function App() {
       )}
 
       <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
-        
-        <Box 
-          sx={{ 
-            height: "64px", 
-            bgcolor: "#ffffff", 
-            borderBottom: "1px solid #e2e8f0", 
-            display: "flex", 
-            alignItems: "center", 
-            justifyContent: "space-between", 
+
+        <Box
+          sx={{
+            height: "64px",
+            bgcolor: "#ffffff",
+            borderBottom: "1px solid #e2e8f0",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
             px: { xs: 2, md: 3 },
             position: "sticky",
             top: 0,
@@ -541,7 +519,7 @@ export default function App() {
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexGrow: 1, maxWidth: "500px" }}>
-            <IconButton 
+            <IconButton
               onClick={() => setMobileSidebarOpen(true)}
               sx={{ display: { xs: "inline-flex", md: "none" }, p: 0.75, color: "#475569" }}
             >
@@ -562,7 +540,7 @@ export default function App() {
                        <SearchIcon sx={{ fontSize: 16, color: "#94a3b8" }} />
                     </InputAdornment>
                   ),
-                  sx: { 
+                  sx: {
                     borderRadius: "99px",
                     bgcolor: "#f1f5f9",
                     border: "none",
@@ -584,11 +562,11 @@ export default function App() {
         </Box>
 
         <Container maxWidth="xl" sx={{ flexGrow: 1, py: { xs: 3, md: 4.5 }, px: { xs: 2, md: 4 } }}>
-          
+
           {errorMessage && (
-            <MuiAlert 
-              severity="error" 
-              onClose={() => setErrorMessage(null)} 
+            <MuiAlert
+              severity="error"
+              onClose={() => setErrorMessage(null)}
               sx={{ mb: 4, borderRadius: "8px", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}
               id="api-error-alert"
             >
@@ -599,7 +577,7 @@ export default function App() {
           <>
               <Box sx={{ borderBottom: "1px solid #e2e8f0", mb: 3, mt: 1, display: "flex", overflowX: "auto" }}>
                 <Box sx={{ display: "flex", gap: 1 }}>
-                  
+
                   <Box
                     onClick={() => navigate("/list")}
                     sx={{
@@ -671,13 +649,13 @@ export default function App() {
                 </Box>
               </Box>
 
-              <Box 
-                sx={{ 
-                  display: "flex", 
-                  flexDirection: { xs: "column", md: "row" }, 
-                  alignItems: { xs: "stretch", md: "center" }, 
-                  justifyContent: "space-between", 
-                  mb: 3, 
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: { xs: "column", md: "row" },
+                  alignItems: { xs: "stretch", md: "center" },
+                  justifyContent: "space-between",
+                  mb: 3,
                   gap: 2,
                   p: 2,
                   borderRadius: "12px",
@@ -708,7 +686,6 @@ export default function App() {
                     </Select>
                   </FormControl>
 
-                  {/* Assignee Filter custom dropdown */}
                   <FormControl size="small" sx={{ minWidth: 160 }}>
                     <InputLabel id="a-filter-label" sx={{ fontSize: "13px" }}>Assignee Filter</InputLabel>
                     <Select
@@ -728,7 +705,6 @@ export default function App() {
                     </Select>
                   </FormControl>
 
-                  {/* Clear filters trigger if active */}
                   {(priorityFilter !== "All" || assigneeFilter !== "All" || searchQuery !== "") && (
                     <Button
                       variant="text"
@@ -746,13 +722,11 @@ export default function App() {
                   )}
                 </Box>
 
-                {/* Visual CTA in panel block content */}
                 <Typography variant="caption" sx={{ color: "#94a3b8", fontWeight: 600, fontSize: "11px", textAlign: { xs: "left", md: "right" } }}>
                   Viewing {filteredTasks.length} out of {tasks.length} total project tasks.
                 </Typography>
               </Box>
 
-              {/* DYNAMIC SCREEN INTERACTION FOR DOCK VIEWS */}
               <Routes>
                 <Route path="/" element={<Navigate to="/list" replace />} />
                 <Route path="/list" element={
@@ -779,8 +753,7 @@ export default function App() {
                     <Typography variant="body2" color="text.secondary" sx={{ maxWidth: "500px", mx: "auto", mb: 3 }}>
                       All synchronized team milestones tracked within the active viewport calendar framework.
                     </Typography>
-                    
-                    {/* Display mock calendar sheet with seeded dates */}
+
                     <Box sx={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 1, maxW: "650px", mx: "auto" }}>
                       {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
                         <Box key={i} sx={{ fontWeight: "bold", py: 1, bgcolor: "#f1f5f9", borderRadius: "4px", fontSize: "14px", color: "#475569" }}>{d}</Box>
@@ -788,7 +761,7 @@ export default function App() {
                       {Array.from({ length: 30 }).map((_, i) => {
                         const dayNum = i + 1;
                         const dayTasks = tasks.filter(t => t.dueDate && parseInt(t.dueDate.split("-")[2]) === dayNum);
-                        
+
                         const doneTasks = dayTasks.filter(t => t.completed || t.status === "Completed" || t.status === "Launched");
                         const pendingTasks = dayTasks.filter(t => !t.completed && t.status !== "Completed" && t.status !== "Launched");
 
@@ -802,10 +775,10 @@ export default function App() {
                               <span>June {dayNum} Overview</span>
                               <span style={{ fontSize: "10px", opacity: 0.8 }}>({dayTasks.length} {dayTasks.length === 1 ? 'task' : 'tasks'})</span>
                             </Typography>
-                            
+
                             {dayTasks.length > 0 ? (
                               <>
-                                {/* Priority Counts */}
+
                                 <Box sx={{ mb: 1.5 }}>
                                   <Typography variant="caption" sx={{ fontWeight: 700, color: "#94a3b8", display: "block", mb: 0.5, textTransform: "uppercase", fontSize: "9px" }}>
                                     Priority Distribution
@@ -826,7 +799,6 @@ export default function App() {
                                   </Box>
                                 </Box>
 
-                                {/* Completed Tasks section */}
                                 <Box sx={{ mb: 1 }}>
                                   <Typography variant="caption" sx={{ fontWeight: 700, color: "#94a3b8", display: "block", mb: 0.5, textTransform: "uppercase", fontSize: "9px" }}>
                                     Completed ({doneTasks.length})
@@ -846,7 +818,6 @@ export default function App() {
                                   )}
                                 </Box>
 
-                                {/* Pending Tasks section */}
                                 <Box sx={{ mt: 1 }}>
                                   <Typography variant="caption" sx={{ fontWeight: 700, color: "#94a3b8", display: "block", mb: 0.5, textTransform: "uppercase", fontSize: "9px" }}>
                                     To-Do / Progress ({pendingTasks.length})
@@ -899,11 +870,11 @@ export default function App() {
                               }
                             }}
                           >
-                            <Box sx={{ 
-                              p: { xs: 0.75, sm: 1.5 }, 
-                              border: "1px solid #f1f5f9", 
-                              borderRadius: "8px", 
-                              position: "relative", 
+                            <Box sx={{
+                              p: { xs: 0.75, sm: 1.5 },
+                              border: "1px solid #f1f5f9",
+                              borderRadius: "8px",
+                              position: "relative",
                               minHeight: { xs: "44px", sm: "65px" },
                               cursor: "pointer",
                               transition: "all 0.2s ease-in-out",
@@ -925,15 +896,15 @@ export default function App() {
                                   else if (t.priority === "Low") dotColor = "#10b981";
 
                                   return (
-                                    <Box 
-                                      key={t.id} 
-                                      sx={{ 
-                                        width: { xs: "4px", sm: "6px" }, 
-                                        height: { xs: "4px", sm: "6px" }, 
-                                        borderRadius: "50%", 
+                                    <Box
+                                      key={t.id}
+                                      sx={{
+                                        width: { xs: "4px", sm: "6px" },
+                                        height: { xs: "4px", sm: "6px" },
+                                        borderRadius: "50%",
                                         bgcolor: dotColor,
                                         boxShadow: "0 1px 2px rgba(0,0,0,0.1)"
-                                      }} 
+                                      }}
                                     />
                                   );
                                 })}
@@ -947,14 +918,12 @@ export default function App() {
                 } />
               </Routes>
 
-
           </>
 
         </Container>
 
       </Box>
 
-      {/* MODAL DIALOG POPUP FOR TASK FORM */}
       <TaskModal
         open={modalOpen}
         onClose={handleCloseModal}
@@ -966,7 +935,6 @@ export default function App() {
         }}
       />
 
-      {/* CONFIRM DELETE DIALOG BOX */}
       <Dialog
         open={deleteId !== null}
         onClose={() => setDeleteId(null)}
@@ -993,7 +961,6 @@ export default function App() {
         </DialogActions>
       </Dialog>
 
-      {/* TOAST SYSTEM (FEEDBACK SNACKBAR) */}
       <Snackbar
         id="feedback-snackbar"
         open={snackbarOpen}
@@ -1001,9 +968,9 @@ export default function App() {
         onClose={() => setSnackbarOpen(false)}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
-        <MuiAlert 
-          onClose={() => setSnackbarOpen(false)} 
-          severity={snackbarSeverity} 
+        <MuiAlert
+          onClose={() => setSnackbarOpen(false)}
+          severity={snackbarSeverity}
           variant="filled"
           sx={{ width: "100%", borderRadius: "8px", fontWeight: "600", fontSize: "13.5px", boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1)" }}
           id="mui-alert-feedback"

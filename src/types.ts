@@ -4,7 +4,7 @@ export type TaskStatus = "Pending" | "In Progress" | "Completed" | "Launched";
 export interface TaskComment {
   id: string;
   text: string;
-  createdAt: string; // "YYYY-MM-DDTHH:mm:ss.sssZ"
+  createdAt: string;
 }
 
 export interface Task {
@@ -14,7 +14,7 @@ export interface Task {
   completed: boolean;
   priority: TaskPriority;
   status: TaskStatus;
-  dueDate: string; // "YYYY-MM-DD"
+  dueDate: string;
   assigneeName: string;
   comments?: TaskComment[];
 }

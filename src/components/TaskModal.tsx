@@ -14,14 +14,14 @@ interface TaskModalProps {
 }
 
 export default function TaskModal({ open, onClose, onSubmit, task, onTaskUpdated }: TaskModalProps) {
-  // If editing an existing task, show side-by-side split view layout; otherwise, simple form.
+
   const isEditing = !!(task && task.id);
 
   return (
-    <Dialog 
-      open={open} 
-      onClose={onClose} 
-      fullWidth 
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth
       maxWidth={isEditing ? "md" : "sm"}
       aria-labelledby="task-modal-title"
       sx={{
@@ -31,13 +31,13 @@ export default function TaskModal({ open, onClose, onSubmit, task, onTaskUpdated
         }
       }}
     >
-      <DialogTitle 
-        id="task-modal-title" 
-        sx={{ 
-          m: 0, 
-          p: 2, 
-          display: "flex", 
-          justifyContent: "space-between", 
+      <DialogTitle
+        id="task-modal-title"
+        sx={{
+          m: 0,
+          p: 2,
+          display: "flex",
+          justifyContent: "space-between",
           alignItems: "center",
           borderBottom: "1px solid #e2e8f0",
           fontWeight: 700,
@@ -57,23 +57,23 @@ export default function TaskModal({ open, onClose, onSubmit, task, onTaskUpdated
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      
+
       <DialogContent sx={{ p: 0 }}>
         {isEditing ? (
-          <Box 
-            sx={{ 
-              display: "grid", 
+          <Box
+            sx={{
+              display: "grid",
               gridTemplateColumns: { xs: "1fr", md: "1.1fr 0.9fr" },
               minHeight: "450px"
             }}
           >
-            {/* Left Column: Traditional task input form edit controls */}
+
             <Box sx={{ borderRight: { md: "1px solid #e1e8ed" }, p: 1 }}>
               <TaskForm
-                initialValues={{ 
-                  title: task!.title, 
-                  description: task!.description, 
-                  completed: task!.completed, 
+                initialValues={{
+                  title: task!.title,
+                  description: task!.description,
+                  completed: task!.completed,
                   priority: task!.priority,
                   status: task!.status,
                   dueDate: task!.dueDate,
@@ -83,8 +83,7 @@ export default function TaskModal({ open, onClose, onSubmit, task, onTaskUpdated
                 onCancel={onClose}
               />
             </Box>
-            
-            {/* Right Column: Audio Voice memos recording & Task Comments */}
+
             <Box sx={{ p: 1, bgcolor: "#fafafa" }}>
               {onTaskUpdated ? (
                 <TaskComments task={task!} onTaskUpdated={onTaskUpdated} />

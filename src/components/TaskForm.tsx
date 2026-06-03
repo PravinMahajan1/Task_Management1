@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { 
-  TextField, 
-  Button, 
-  Box, 
-  FormControl, 
-  InputLabel, 
-  Select, 
+import {
+  TextField,
+  Button,
+  Box,
+  FormControl,
+  InputLabel,
+  Select,
   MenuItem
 } from "@mui/material";
 import { TaskInput, TaskPriority, TaskStatus } from "../types";
@@ -71,10 +71,10 @@ export default function TaskForm({ initialValues, onSubmit, onCancel }: TaskForm
   };
 
   return (
-    <Box 
-      component="form" 
-      onSubmit={handleSubmit} 
-      noValidate 
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      noValidate
       sx={{ display: "flex", flexDirection: "column", gap: 2.5, px: 2, py: 2 }}
     >
       <TextField
@@ -94,7 +94,7 @@ export default function TaskForm({ initialValues, onSubmit, onCancel }: TaskForm
         variant="outlined"
         placeholder="e.g. Solutions Pages"
       />
-      
+
       <TextField
         id="task-description"
         label="Description / Checklist"
@@ -107,7 +107,6 @@ export default function TaskForm({ initialValues, onSubmit, onCancel }: TaskForm
         placeholder="Explain what needs to be done..."
       />
 
-      {/* Row 1: Priority & Status Stage */}
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2 }}>
         <FormControl fullWidth variant="outlined">
           <InputLabel id="task-priority-label">Priority</InputLabel>
@@ -141,7 +140,6 @@ export default function TaskForm({ initialValues, onSubmit, onCancel }: TaskForm
         </FormControl>
       </Box>
 
-      {/* Row 2: Due date & Assignee */}
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2 }}>
         <TextField
           id="task-due-date"
@@ -170,25 +168,25 @@ export default function TaskForm({ initialValues, onSubmit, onCancel }: TaskForm
           </Select>
         </FormControl>
       </Box>
-      
+
       <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1.5, mt: 1, borderTop: "1px solid #e2e8f0", pt: 2 }}>
         {onCancel && (
-          <Button 
+          <Button
             id="btn-cancel-task"
-            onClick={onCancel} 
-            variant="outlined" 
+            onClick={onCancel}
+            variant="outlined"
             color="inherit"
             sx={{ textTransform: "none", borderRadius: "8px" }}
           >
             Cancel
           </Button>
         )}
-        <Button 
+        <Button
           id="btn-submit-task"
-          type="submit" 
-          variant="contained" 
-          sx={{ 
-            textTransform: "none", 
+          type="submit"
+          variant="contained"
+          sx={{
+            textTransform: "none",
             borderRadius: "8px",
             bgcolor: "#6366f1",
             "&:hover": { bgcolor: "#4f46e5" }

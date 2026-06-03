@@ -1,11 +1,11 @@
 import React from "react";
-import { 
-  Box, 
-  Card, 
-  CardContent, 
-  Typography, 
-  IconButton, 
-  Avatar, 
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  IconButton,
+  Avatar,
   Tooltip,
   Paper,
   Button
@@ -48,7 +48,6 @@ function isTaskOverdue(dueDateStr: string, status: TaskStatus): boolean {
   }
 }
 
-// Format the date to look like "March 17" or similar
 function formatDate(dateStr: string): string {
   if (!dateStr) return "";
   try {
@@ -59,41 +58,38 @@ function formatDate(dateStr: string): string {
   }
 }
 
-// Get initials and nice background color helper
 function getAssigneeMeta(name: string) {
   const clean = name || "Aarav Sharma";
   const parts = clean.split(" ");
   const initials = parts.map(p => p[0]).join("").substring(0, 2).toUpperCase();
-  
-  // Pick stable background color based on name string sum
+
   let sum = 0;
   for (let i = 0; i < clean.length; i++) {
     sum += clean.charCodeAt(i);
   }
   const colors = [
-    "#ec4899", // pink
-    "#8b5cf6", // purple
-    "#3b82f6", // blue
-    "#10b981", // emerald
-    "#f59e0b", // amber
-    "#06b6d4"  // cyan
+    "#ec4899",
+    "#8b5cf6",
+    "#3b82f6",
+    "#10b981",
+    "#f59e0b",
+    "#06b6d4"
   ];
   const bg = colors[sum % colors.length];
   return { initials, bg };
 }
 
-export default function TaskBoardView({ 
-  tasks, 
-  onEdit, 
-  onDelete, 
+export default function TaskBoardView({
+  tasks,
+  onEdit,
+  onDelete,
   onUpdateStatus,
-  onAddTaskToStatus 
+  onAddTaskToStatus
 }: TaskBoardViewProps) {
 
   const [draggedTaskId, setDraggedTaskId] = React.useState<string | null>(null);
   const [hoveredColumnId, setHoveredColumnId] = React.useState<TaskStatus | null>(null);
 
-  // Helper to trigger status transitions
   const moveTask = (task: Task, direction: "back" | "forward") => {
     const statusOrder: TaskStatus[] = ["Pending", "In Progress", "Completed", "Launched"];
     const currentIndex = statusOrder.indexOf(task.status);
@@ -137,17 +133,17 @@ export default function TaskBoardView({
   };
 
   return (
-    <Box 
-      sx={{ 
-        display: "grid", 
-        gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)", lg: "repeat(4, 1fr)" }, 
-        gap: 3, 
-        mt: 2 
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)", lg: "repeat(4, 1fr)" },
+        gap: 3,
+        mt: 2
       }}
     >
       {COLUMNS.map((column) => {
         const columnTasks = tasks.filter((t) => t.status === column.id);
-        
+
         return (
           <Paper
             key={column.id}
@@ -158,10 +154,10 @@ export default function TaskBoardView({
             onDrop={(e) => handleDrop(e, column.id)}
             sx={{
               bgcolor: hoveredColumnId === column.id ? `${column.bg}60` : "#f8fafc",
-              border: hoveredColumnId === column.id 
-                ? `2px dashed ${column.dot}` 
-                : draggedTaskId !== null 
-                  ? "2px dashed #cbd5e1" 
+              border: hoveredColumnId === column.id
+                ? `2px dashed ${column.dot}`
+                : draggedTaskId !== null
+                  ? "2px dashed #cbd5e1"
                   : "1px solid #e2e8f0",
               borderRadius: "16px",
               p: 2,
@@ -171,12 +167,12 @@ export default function TaskBoardView({
               transition: "all 0.2s ease-in-out"
             }}
           >
-            {/* Column Header */}
-            <Box 
-              sx={{ 
-                display: "flex", 
-                alignItems: "center", 
-                justifyContent: "space-between", 
+
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
                 mb: 2.5,
                 pb: 1,
                 borderBottom: "2px solid",
@@ -184,27 +180,27 @@ export default function TaskBoardView({
               }}
             >
               <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                <Box 
-                  sx={{ 
-                    width: "10px", 
-                    height: "10px", 
-                    borderRadius: "50%", 
-                    bgcolor: column.dot 
-                  }} 
+                <Box
+                  sx={{
+                    width: "10px",
+                    height: "10px",
+                    borderRadius: "50%",
+                    bgcolor: column.dot
+                  }}
                 />
-                <Typography 
-                  variant="subtitle1" 
+                <Typography
+                  variant="subtitle1"
                   sx={{ fontWeight: 700, color: "#1e293b", fontFamily: "Inter, sans-serif" }}
                 >
                   {column.label}
                 </Typography>
-                <Box 
-                  sx={{ 
-                    px: 1.2, 
-                    py: 0.2, 
-                    borderRadius: "99px", 
-                    bgcolor: "#e2e8f0", 
-                    fontSize: "11px", 
+                <Box
+                  sx={{
+                    px: 1.2,
+                    py: 0.2,
+                    borderRadius: "99px",
+                    bgcolor: "#e2e8f0",
+                    fontSize: "11px",
                     fontWeight: "bold",
                     color: "#475569"
                   }}
@@ -214,14 +210,14 @@ export default function TaskBoardView({
               </Box>
 
               {onAddTaskToStatus && (
-                <IconButton 
-                  size="small" 
+                <IconButton
+                  size="small"
                   onClick={() => onAddTaskToStatus(column.id)}
-                  sx={{ 
+                  sx={{
                     color: "#64748b",
                     p: 0.5,
-                    borderRadius: "8px", 
-                    "&:hover": { bgcolor: "#f1f5f9" } 
+                    borderRadius: "8px",
+                    "&:hover": { bgcolor: "#f1f5f9" }
                   }}
                   title={`Add task to ${column.label}`}
                 >
@@ -230,14 +226,13 @@ export default function TaskBoardView({
               )}
             </Box>
 
-            {/* List of Tasks in this Column */}
-            <Box 
-              sx={{ 
-                display: "flex", 
-                flexDirection: "column", 
-                gap: 2, 
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
                 flexGrow: 1,
-                overflowY: "auto" 
+                overflowY: "auto"
               }}
             >
               <AnimatePresence mode="popLayout">
@@ -249,13 +244,13 @@ export default function TaskBoardView({
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <Box 
-                      sx={{ 
-                        py: 4, 
-                        textAlign: "center", 
-                        border: "1px dashed #cbd5e1", 
+                    <Box
+                      sx={{
+                        py: 4,
+                        textAlign: "center",
+                        border: "1px dashed #cbd5e1",
                         borderRadius: "12px",
-                        bgcolor: "#fafafa" 
+                        bgcolor: "#fafafa"
                       }}
                     >
                       <Typography variant="caption" color="text.secondary">
@@ -267,7 +262,7 @@ export default function TaskBoardView({
                   columnTasks.map((task) => {
                     const mate = getAssigneeMeta(task.assigneeName);
                     const isOverdue = isTaskOverdue(task.dueDate, task.status);
-                    
+
                     return (
                       <motion.div
                         key={task.id}
@@ -309,20 +304,19 @@ export default function TaskBoardView({
                           }}
                         >
                           <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
-                            
-                            {/* Priority Badge */}
+
                             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5 }}>
                               <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                                <FlagIcon 
-                                  sx={{ 
-                                    fontSize: "12px", 
-                                    color: task.priority === "High" ? "#ef4444" : task.priority === "Low" ? "#3b82f6" : "#eab308" 
-                                  }} 
+                                <FlagIcon
+                                  sx={{
+                                    fontSize: "12px",
+                                    color: task.priority === "High" ? "#ef4444" : task.priority === "Low" ? "#3b82f6" : "#eab308"
+                                  }}
                                 />
-                                <Typography 
-                                  variant="caption" 
-                                  sx={{ 
-                                    fontWeight: 600, 
+                                <Typography
+                                  variant="caption"
+                                  sx={{
+                                    fontWeight: 600,
                                     fontSize: "11px",
                                     color: task.priority === "High" ? "#b91c1c" : task.priority === "Low" ? "#1d4ed8" : "#854d0e"
                                   }}
@@ -331,24 +325,23 @@ export default function TaskBoardView({
                                 </Typography>
                                 {isOverdue && (
                                   <Tooltip title="This task is overdue!">
-                                    <AccessTimeIcon 
-                                      sx={{ 
-                                        fontSize: "14px", 
-                                        color: "#ef4444", 
-                                        ml: 1, 
+                                    <AccessTimeIcon
+                                      sx={{
+                                        fontSize: "14px",
+                                        color: "#ef4444",
+                                        ml: 1,
                                         verticalAlign: "middle"
-                                      }} 
+                                      }}
                                     />
                                   </Tooltip>
                                 )}
                               </Box>
-    
-                              {/* Quick Arrows to change stage */}
+
                               <Box sx={{ display: "inline-flex", gap: 0.25 }}>
                                 <Tooltip title="Move stage back">
                                   <span>
-                                    <IconButton 
-                                      size="small" 
+                                    <IconButton
+                                      size="small"
                                       disabled={task.status === "Pending"}
                                       onClick={() => moveTask(task, "back")}
                                       sx={{ p: 0.25, color: "#94a3b8" }}
@@ -359,8 +352,8 @@ export default function TaskBoardView({
                                 </Tooltip>
                                 <Tooltip title="Move stage forward">
                                   <span>
-                                    <IconButton 
-                                      size="small" 
+                                    <IconButton
+                                      size="small"
                                       disabled={task.status === "Launched"}
                                       onClick={() => moveTask(task, "forward")}
                                       sx={{ p: 0.25, color: "#94a3b8" }}
@@ -371,14 +364,13 @@ export default function TaskBoardView({
                                 </Tooltip>
                               </Box>
                             </Box>
-    
-                            {/* Title & Description */}
-                            <Typography 
+
+                            <Typography
                               onClick={() => onEdit(task)}
-                              variant="subtitle2" 
-                              sx={{ 
-                                fontWeight: 700, 
-                                color: "#1e293b", 
+                              variant="subtitle2"
+                              sx={{
+                                fontWeight: 700,
+                                color: "#1e293b",
                                 fontSize: "14px",
                                 lineHeight: "1.25",
                                 cursor: "pointer",
@@ -387,15 +379,15 @@ export default function TaskBoardView({
                             >
                               {task.title}
                             </Typography>
-    
+
                             {task.description && (
-                              <Typography 
-                                variant="body2" 
-                                color="text.secondary" 
-                                sx={{ 
-                                  mt: 0.5, 
-                                  fontSize: "12.5px", 
-                                  overflow: "hidden", 
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{
+                                  mt: 0.5,
+                                  fontSize: "12.5px",
+                                  overflow: "hidden",
                                   textOverflow: "ellipsis",
                                   display: "-webkit-box",
                                   WebkitLineClamp: 2,
@@ -405,22 +397,19 @@ export default function TaskBoardView({
                                 {task.description}
                               </Typography>
                             )}
-    
-                            {/* Divider */}
+
                             <Box sx={{ my: 1.5, borderTop: "1px dashed #e2e8f0" }} />
-    
-                            {/* Footer details: Date & Assignee */}
+
                             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                              
-                              {/* Due Date Indicator */}
+
                               <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                                 <CalendarMonthIcon sx={{ fontSize: "14px", color: isOverdue ? "#ef4444" : "#94a3b8" }} />
-                                <Typography 
-                                  variant="caption" 
-                                  sx={{ 
-                                    fontSize: "11.5px", 
-                                    fontWeight: 550, 
-                                    color: isOverdue ? "#ef4444" : "#64748b" 
+                                <Typography
+                                  variant="caption"
+                                  sx={{
+                                    fontSize: "11.5px",
+                                    fontWeight: 550,
+                                    color: isOverdue ? "#ef4444" : "#64748b"
                                   }}
                                 >
                                   {formatDate(task.dueDate)}
@@ -431,22 +420,20 @@ export default function TaskBoardView({
                                   )}
                                 </Typography>
                               </Box>
-    
-                              {/* Member Avatar and Mini Menus */}
+
                               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                
-                                {/* Actions block visible on Hover */}
+
                                 <Box sx={{ display: "inline-flex", gap: 0.5 }}>
-                                  <IconButton 
-                                    size="small" 
+                                  <IconButton
+                                    size="small"
                                     aria-label="Edit task"
                                     onClick={() => onEdit(task)}
                                     sx={{ p: 0.25, color: "#64748b", "&:hover": { color: "#4f46e5" } }}
                                   >
                                     <EditIcon sx={{ fontSize: "14px" }} />
                                   </IconButton>
-                                  <IconButton 
-                                    size="small" 
+                                  <IconButton
+                                    size="small"
                                     aria-label="Delete task"
                                     onClick={() => onDelete(task.id)}
                                     sx={{ p: 0.25, color: "#64748b", "&:hover": { color: "#ef4444" } }}
@@ -454,24 +441,24 @@ export default function TaskBoardView({
                                     <DeleteIcon sx={{ fontSize: "14px" }} />
                                   </IconButton>
                                 </Box>
-    
+
                                 <Tooltip title={`Assignee: ${task.assigneeName}`}>
-                                  <Avatar 
-                                    sx={{ 
-                                      width: 24, 
-                                      height: 24, 
-                                      fontSize: "10px", 
+                                  <Avatar
+                                    sx={{
+                                      width: 24,
+                                      height: 24,
+                                      fontSize: "10px",
                                       fontWeight: "bold",
-                                      bgcolor: mate.bg 
+                                      bgcolor: mate.bg
                                     }}
                                   >
                                     {mate.initials}
                                   </Avatar>
                                 </Tooltip>
                               </Box>
-    
+
                             </Box>
-                            
+
                           </CardContent>
                         </Card>
                       </motion.div>

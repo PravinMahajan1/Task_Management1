@@ -7,17 +7,13 @@ import { v4 as uuidv4 } from "uuid";
 const app = express();
 const PORT = 3000;
 
-// Enable CORS
 app.use(cors());
 
-// Parse JSON bodies with a limit suitable for audio base64 uploads
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
-// Path to persistent JSON database
 const TASKS_FILE = path.join(process.cwd(), "tasks.json");
 
-// Ensure the JSON database file exists
 if (!fs.existsSync(TASKS_FILE)) {
   fs.writeFileSync(TASKS_FILE, JSON.stringify([], null, 2), "utf8");
 }
@@ -43,9 +39,6 @@ interface Task {
   comments?: TaskComment[];
 }
 
-
-
-// Helpers for reading/writing Tasks
 function readTasks(): Task[] {
   try {
     const data = fs.readFileSync(TASKS_FILE, "utf8");
@@ -53,12 +46,12 @@ function readTasks(): Task[] {
     return parsed.map((t: any) => {
       const priority = (t.priority === "Low" || t.priority === "Medium" || t.priority === "High") ? t.priority : "Medium";
       const completed = typeof t.completed === "boolean" ? t.completed : false;
-      
+
       let status = t.status;
       if (!status || !["Pending", "In Progress", "Completed", "Launched"].includes(status)) {
         status = completed ? "Completed" : "Pending";
       }
-      
+
       const formattedDueDate = t.dueDate || new Date().toISOString().slice(0, 10);
       const assigneeName = t.assigneeName || "Alex Rivera";
 
@@ -88,15 +81,13 @@ function writeTasks(tasks: Task[]): void {
   }
 }
 
-// REST API Endpoints defined at both /api/tasks and /tasks for absolute compatibility
 const registerTaskRoutes = (routePrefix: string) => {
-  // GET all tasks
+
   app.get(`${routePrefix}`, (req, res) => {
     const tasks = readTasks();
     res.status(200).json(tasks);
   });
 
-  // POST create new task
   app.post(`${routePrefix}`, (req, res) => {
     const { title, description, priority, status, dueDate, assigneeName } = req.body;
 
@@ -135,7 +126,6 @@ const registerTaskRoutes = (routePrefix: string) => {
     res.status(201).json(newTask);
   });
 
-  // PUT update existing task by ID
   app.put(`${routePrefix}/:id`, (req, res) => {
     const { id } = req.params;
     const { title, description, completed, priority, status, dueDate, assigneeName } = req.body;
@@ -147,7 +137,6 @@ const registerTaskRoutes = (routePrefix: string) => {
       return res.status(404).json({ error: `Task with ID ${id} not found` });
     }
 
-    // Prepare updated fields
     const updatedTask = { ...tasks[taskIndex] };
 
     if (title !== undefined) {
@@ -203,7 +192,6 @@ const registerTaskRoutes = (routePrefix: string) => {
     res.status(200).json(updatedTask);
   });
 
-  // POST add a text comment to a task
   app.post(`${routePrefix}/:id/comments`, (req, res) => {
     const { id } = req.params;
     const { text } = req.body;
@@ -228,16 +216,13 @@ const registerTaskRoutes = (routePrefix: string) => {
     if (!tasks[taskIndex].comments) {
       tasks[taskIndex].comments = [];
     }
-    
+
     tasks[taskIndex].comments.push(newComment);
     writeTasks(tasks);
 
     res.status(201).json({ comment: newComment, task: tasks[taskIndex] });
   });
 
-  // Audio memos feature removed
-
-  // DELETE a comment from a task
   app.delete(`${routePrefix}/:id/comments/:commentId`, (req, res) => {
     const { id, commentId } = req.params;
 
@@ -261,7 +246,6 @@ const registerTaskRoutes = (routePrefix: string) => {
     res.status(404).json({ error: "Comment not found" });
   });
 
-  // DELETE task by ID
   app.delete(`${routePrefix}/:id`, (req, res) => {
     const { id } = req.params;
 
@@ -279,11 +263,9 @@ const registerTaskRoutes = (routePrefix: string) => {
   });
 };
 
-// Mount endpoints under both /api/tasks and /tasks
 registerTaskRoutes("/api/tasks");
 registerTaskRoutes("/tasks");
 
-// Vite dev-server / production build server middleware assembly
 async function startServer() {
   if (process.env.NODE_ENV !== "production") {
     const { createServer: createViteServer } = await import("vite");

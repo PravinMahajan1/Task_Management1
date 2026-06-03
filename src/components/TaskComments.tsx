@@ -68,14 +68,14 @@ export default function TaskComments({ task, onTaskUpdated }: TaskCommentsProps)
         <ChatIcon sx={{ color: "#6366f1", fontSize: "20px" }} /> Comments
       </Typography>
 
-      <Paper 
-        variant="outlined" 
-        sx={{ 
-          flexGrow: 1, 
-          maxHeight: "260px", 
-          overflowY: "auto", 
-          bgcolor: "#f8fafc", 
-          borderRadius: "12px", 
+      <Paper
+        variant="outlined"
+        sx={{
+          flexGrow: 1,
+          maxHeight: "260px",
+          overflowY: "auto",
+          bgcolor: "#f8fafc",
+          borderRadius: "12px",
           p: 2,
           display: "flex",
           flexDirection: "column",
@@ -91,10 +91,10 @@ export default function TaskComments({ task, onTaskUpdated }: TaskCommentsProps)
           </Box>
         ) : (
           activeComments.map((comment) => (
-            <Box 
-              key={comment.id} 
-              sx={{ 
-                display: "flex", 
+            <Box
+              key={comment.id}
+              sx={{
+                display: "flex",
                 flexDirection: "column",
                 alignItems: "flex-start",
                 gap: 0.5,
@@ -116,20 +116,20 @@ export default function TaskComments({ task, onTaskUpdated }: TaskCommentsProps)
                     Project Member
                   </Typography>
                 </Box>
-                
+
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                   <Typography variant="caption" sx={{ color: "#94a3b8", fontSize: "10px" }}>
                     {new Date(comment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </Typography>
 
-                  <IconButton 
-                    size="small" 
+                  <IconButton
+                    size="small"
                     className="delete-btn"
-                    onClick={() => handleDeleteComment(comment.id)} 
-                    sx={{ 
-                      opacity: 0, 
-                      transition: "opacity 0.2s", 
-                      color: "#ef4444", 
+                    onClick={() => handleDeleteComment(comment.id)}
+                    sx={{
+                      opacity: 0,
+                      transition: "opacity 0.2s",
+                      color: "#ef4444",
                       p: 0.25,
                       marginLeft: 1
                     }}
@@ -163,21 +163,21 @@ export default function TaskComments({ task, onTaskUpdated }: TaskCommentsProps)
           value={text}
           onChange={(e) => setText(e.target.value)}
           disabled={submitting}
-          sx={{ 
-            "& .MuiOutlinedInput-root": { 
+          sx={{
+            "& .MuiOutlinedInput-root": {
               borderRadius: "10px",
               bgcolor: "#ffffff"
-            } 
+            }
           }}
         />
 
-        <IconButton 
-          type="submit" 
+        <IconButton
+          type="submit"
           disabled={!text.trim() || submitting}
-          sx={{ 
-            bgcolor: (text.trim() && !submitting) ? "#6366f1" : "#f1f5f9", 
+          sx={{
+            bgcolor: (text.trim() && !submitting) ? "#6366f1" : "#f1f5f9",
             color: (text.trim() && !submitting) ? "#ffffff" : "#94a3b8",
-            "&:hover": { bgcolor: "#4f46e5" } 
+            "&:hover": { bgcolor: "#4f46e5" }
           }}
         >
           {submitting ? <CircularProgress size={20} /> : <SendIcon sx={{ fontSize: "16px" }} />}
