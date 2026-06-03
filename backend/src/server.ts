@@ -4,9 +4,13 @@ import fs from "fs";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import { rateLimit } from "express-rate-limit";
+import dotenv from "dotenv";
+
+// Load environment variables
+dotenv.config();
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 const corsOptions = {
   origin: process.env.NODE_ENV === "production" ? (process.env.ALLOWED_ORIGIN || "") : true,
@@ -366,6 +370,11 @@ const registerMemberRoutes = (routePrefix: string) => {
   });
 };
 
+// Healthcheck endpoint
+app.get("/", (req, res) => {
+  res.status(200).json({ status: "ok", message: "Task Manager API Server" });
+});
+
 registerTaskRoutes("/api/tasks");
 registerTaskRoutes("/tasks");
 
@@ -373,22 +382,7 @@ registerMemberRoutes("/api/members");
 registerMemberRoutes("/members");
 
 async function startServer() {
-  if (process.env.NODE_ENV !== "production") {
-    const { createServer: createViteServer } = await import("vite");
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
-    });
-    app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(process.cwd(), "dist");
-    app.use(express.static(distPath));
-    app.get("*", (req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
-    });
-  }
-
-  app.listen(PORT, "0.0.0.0", () => {
+  app.listen(Number(PORT), "0.0.0.0", () => {
     console.log(`Server running on port ${PORT} in ${process.env.NODE_ENV || "development"} mode.`);
   });
 }

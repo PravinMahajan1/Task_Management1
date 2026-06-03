@@ -1,41 +1,21 @@
 {
-  "name": "react-example",
+  "name": "task-manager-monorepo",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
   "scripts": {
-    "dev": "tsx watch server.ts",
-    "build": "vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs",
-    "preview": "vite preview",
-    "clean": "rm -rf dist server.js",
-    "start": "node dist/server.cjs",
-    "lint": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.1",
-    "@mui/icons-material": "^9.0.1",
-    "@mui/material": "^9.0.1",
-    "axios": "^1.16.1",
-    "bootstrap": "^5.3.8",
-    "cors": "^2.8.6",
-    "express": "^4.21.2",
-    "express-rate-limit": "^7.4.1",
-    "motion": "^12.23.24",
-    "react": "^19.0.1",
-    "react-dom": "^19.0.1",
-    "react-router-dom": "^6.28.0",
-    "uuid": "^14.0.0"
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "dev:backend": "npm run dev --workspace=backend",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "build:frontend": "npm run build --workspace=frontend",
+    "build:backend": "npm run build --workspace=backend",
+    "build": "npm run build:backend && npm run build:frontend",
+    "start": "npm run start --workspace=backend",
+    "clean": "rm -rf node_modules frontend/node_modules backend/node_modules frontend/dist backend/dist"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.19",
-    "@types/express": "^4.17.21",
-    "@types/node": "^22.14.0",
-    "@types/uuid": "^10.0.0",
-    "@vitejs/plugin-react": "^5.0.4",
-    "esbuild": "^0.25.0",
-    "tsx": "^4.21.0",
-    "typescript": "~5.8.2",
-    "vite": "^6.2.3"
+    "concurrently": "^9.1.2"
   }
 }
