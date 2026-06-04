@@ -13,7 +13,37 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const corsOptions = {
-  origin: process.env.NODE_ENV === "production" ? (process.env.ALLOWED_ORIGIN || "") : true,
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    if (!origin) return callback(null, true);
+    
+    if (process.env.NODE_ENV !== "production") {
+      return callback(null, true);
+    }
+
+    const allowedEnv = process.env.ALLOWED_ORIGIN || "";
+    // Split by comma in case there are multiple origins
+    const allowedOrigins = allowedEnv.split(",").map(o => {
+      try {
+        // Strip out any trailing path or slash to get pure origin
+        return new URL(o.trim()).origin;
+      } catch {
+        return o.trim();
+      }
+    });
+
+    try {
+      const originUrl = new URL(origin).origin;
+      if (allowedOrigins.includes(originUrl) || allowedOrigins.includes("*") || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+    } catch {
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+    }
+
+    callback(null, false);
+  },
   credentials: true
 };
 app.use(cors(corsOptions));

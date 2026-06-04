@@ -14,3 +14,7 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+
+# Keep data files (tasks/members JSON) tracked in git for initial seed data
+!backend/tasks.json
+!backend/members.json

@@ -1,14 +1,26 @@
 import axios from "axios";
 import { Task, TaskInput } from "../types";
 
-const BASE_URL = (import.meta as any).env.VITE_API_URL || "/api/tasks";
+// In production (Vercel), set VITE_API_URL to your full Render backend URL
+// e.g. https://your-backend.onrender.com
+// In local dev, leave it empty — Vite proxy handles /api/* → localhost:3000
+const BACKEND_BASE = ((import.meta as any).env.VITE_API_URL as string | undefined)
+  ? String((import.meta as any).env.VITE_API_URL).replace(/\/$/, "")
+  : "";
+
+const TASKS_API_URL = `${BACKEND_BASE}/api/tasks`;
+const MEMBERS_API_URL = `${BACKEND_BASE}/api/members`;
 
 const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: TASKS_API_URL,
 });
 
 export async function getAllTasks(): Promise<Task[]> {
   const response = await api.get<Task[]>("");
+  if (!Array.isArray(response.data)) {
+    console.error("API response is not an array:", response.data);
+    return [];
+  }
   return response.data;
 }
 
@@ -43,17 +55,29 @@ export async function deleteComment(taskId: string, commentId: string): Promise<
 }
 
 export async function getAllMembers(): Promise<string[]> {
-  const response = await axios.get<string[]>("/api/members");
+  const response = await axios.get<string[]>(MEMBERS_API_URL);
+  if (!Array.isArray(response.data)) {
+    console.error("API response is not an array:", response.data);
+    return [];
+  }
   return response.data;
 }
 
 export async function addMember(name: string): Promise<string[]> {
-  const response = await axios.post<string[]>("/api/members", { name });
+  const response = await axios.post<string[]>(MEMBERS_API_URL, { name });
+  if (!Array.isArray(response.data)) {
+    console.error("API response is not an array:", response.data);
+    return [];
+  }
   return response.data;
 }
 
 export async function deleteMember(name: string): Promise<string[]> {
-  const response = await axios.delete<string[]>(`/api/members/${encodeURIComponent(name)}`);
+  const response = await axios.delete<string[]>(`${MEMBERS_API_URL}/${encodeURIComponent(name)}`);
+  if (!Array.isArray(response.data)) {
+    console.error("API response is not an array:", response.data);
+    return [];
+  }
   return response.data;
 }
 
