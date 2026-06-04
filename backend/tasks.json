@@ -1,11 +1,11 @@
 [
   {
     "id": "bac6e8fd-bc6a-4191-9c8a-2cb3f8f6130c",
-    "title": "Order Flow Architecture",
+    "title": "Updated QA Task",
     "description": "Map user states and transition paths across premium API products.",
     "completed": false,
-    "priority": "High",
-    "status": "Pending",
+    "priority": "Low",
+    "status": "In Progress",
     "dueDate": "2026-06-01",
     "assigneeName": "Aarav Sharma",
     "comments": []
@@ -19,7 +19,13 @@
     "status": "In Progress",
     "dueDate": "2026-06-17",
     "assigneeName": "Harsha Reddy",
-    "comments": []
+    "comments": [
+      {
+        "id": "a23a9be0-82b1-4c77-93c5-8f31099bb51e",
+        "text": "This is a QA test comment",
+        "createdAt": "2026-06-04T10:35:24.093Z"
+      }
+    ]
   },
   {
     "id": "2d392d58-1e2e-4fc2-ac28-ce6fa9403799",
@@ -46,6 +52,28 @@
     "priority": "Medium",
     "status": "Pending",
     "dueDate": "2026-06-04",
+    "assigneeName": "Aarav Sharma",
+    "comments": []
+  },
+  {
+    "id": "58ec6a22-7e05-48d8-8a85-5b7849f3cf28",
+    "title": "' OR 1=1; DROP TABLE tasks; --",
+    "description": "sql injection test",
+    "completed": false,
+    "priority": "Low",
+    "status": "Pending",
+    "dueDate": "2026-06-10",
+    "assigneeName": "Aarav Sharma",
+    "comments": []
+  },
+  {
+    "id": "dffe854f-1a64-4b79-a5ad-620f231effea",
+    "title": "<script>alert(\"xss\")</script>",
+    "description": "xss test",
+    "completed": false,
+    "priority": "Low",
+    "status": "Pending",
+    "dueDate": "2026-06-10",
     "assigneeName": "Aarav Sharma",
     "comments": []
   }
