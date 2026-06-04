@@ -136,6 +136,16 @@ const registerTaskRoutes = (routePrefix: string) => {
     res.status(200).json(tasks);
   });
 
+  app.get(`${routePrefix}/:id`, (req, res) => {
+    const { id } = req.params;
+    const tasks = readTasks();
+    const task = tasks.find((t) => t.id === id);
+    if (!task) {
+      return res.status(404).json({ error: `Task with ID ${id} not found` });
+    }
+    res.status(200).json(task);
+  });
+
   app.post(`${routePrefix}`, (req, res) => {
     const { title, description, priority, status, dueDate, assigneeName } = req.body;
 
@@ -380,6 +390,12 @@ registerTaskRoutes("/tasks");
 
 registerMemberRoutes("/api/members");
 registerMemberRoutes("/members");
+
+// Global error handler middleware
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error("Unhandled error:", err);
+  res.status(500).json({ error: "An unexpected error occurred on the server" });
+});
 
 async function startServer() {
   app.listen(Number(PORT), "0.0.0.0", () => {
