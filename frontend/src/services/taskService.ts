@@ -1,28 +1,15 @@
 import axios from "axios";
 import { Task, TaskInput } from "../types";
 
-const VITE_API_URL = (import.meta as any).env.VITE_API_URL || "";
+// In production (Vercel), set VITE_API_URL to your full Render backend URL
+// e.g. https://your-backend.onrender.com
+// In local dev, leave it empty — Vite proxy handles /api/* → localhost:3000
+const BACKEND_BASE = ((import.meta as any).env.VITE_API_URL as string | undefined)
+  ? String((import.meta as any).env.VITE_API_URL).replace(/\/$/, "")
+  : "";
 
-// Determine the root backend URL from VITE_API_URL or default to origin
-let backendBaseUrl = "";
-if (VITE_API_URL) {
-  try {
-    const url = new URL(VITE_API_URL, window.location.origin);
-    // If VITE_API_URL has a pathname (like /api/tasks), get the base origin
-    backendBaseUrl = url.origin;
-  } catch {
-    backendBaseUrl = VITE_API_URL;
-  }
-}
-
-// Ensure backendBaseUrl doesn't end with a slash for consistent joining
-if (backendBaseUrl.endsWith("/")) {
-  backendBaseUrl = backendBaseUrl.slice(0, -1);
-}
-
-// Base URLs for tasks and members
-const TASKS_API_URL = backendBaseUrl ? `${backendBaseUrl}/api/tasks` : "/api/tasks";
-const MEMBERS_API_URL = backendBaseUrl ? `${backendBaseUrl}/api/members` : "/api/members";
+const TASKS_API_URL = `${BACKEND_BASE}/api/tasks`;
+const MEMBERS_API_URL = `${BACKEND_BASE}/api/members`;
 
 const api = axios.create({
   baseURL: TASKS_API_URL,
