@@ -103,7 +103,7 @@ export default function App() {
   const [activeProjectId, setActiveProjectId] = useState("design");
   const [mainProjectExpanded, setMainProjectExpanded] = useState(true);
 
-  const [activeWorkspace, setActiveWorkspace] = useState("OnPoint Studio");
+  const [activeWorkspace, setActiveWorkspace] = useState("HyperQ");
 
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
@@ -357,7 +357,7 @@ export default function App() {
                 {activeWorkspace}
               </Typography>
             </Box>
-             <KeyboardArrowDownIcon sx={{ fontSize: 14, color: "#64748b" }} />
+            <KeyboardArrowDownIcon sx={{ fontSize: 14, color: "#64748b" }} />
           </Box>
         </Box>
 
@@ -366,7 +366,7 @@ export default function App() {
             id="sidebar-add-new-btn"
             variant="contained"
             fullWidth
-             startIcon={<AddIcon />}
+            startIcon={<AddIcon />}
             onClick={handleOpenAddModal}
             sx={{
               py: 1.2,
@@ -418,7 +418,7 @@ export default function App() {
               <Typography variant="caption" sx={{ fontWeight: 800, color: "#64748b", display: "flex", alignItems: "center", gap: 0.5 }}>
                 📁 Main Project
               </Typography>
-               {mainProjectExpanded ? <KeyboardArrowDownIcon sx={{ fontSize: 14, color: "#64748b" }} /> : <KeyboardArrowRightIcon sx={{ fontSize: 14, color: "#64748b" }} />}
+              {mainProjectExpanded ? <KeyboardArrowDownIcon sx={{ fontSize: 14, color: "#64748b" }} /> : <KeyboardArrowRightIcon sx={{ fontSize: 14, color: "#64748b" }} />}
             </Box>
 
             {mainProjectExpanded && (
@@ -468,7 +468,7 @@ export default function App() {
             onClick={() => triggerNotification("Help guide & quick-start manuals loaded.", "info")}
             sx={{ minWidth: 40, p: 0.5, color: "#64748b" }}
           >
-             <HelpOutlineIcon sx={{ fontSize: 18 }} />
+            <HelpOutlineIcon sx={{ fontSize: 18 }} />
           </Button>
         </Box>
       </Box>
@@ -508,7 +508,7 @@ export default function App() {
               onClick={() => setMobileSidebarOpen(true)}
               sx={{ display: { xs: "inline-flex", md: "none" }, p: 0.75, color: "#475569" }}
             >
-               <MenuIcon sx={{ fontSize: 20 }} />
+              <MenuIcon sx={{ fontSize: 20 }} />
             </IconButton>
 
             <TextField
@@ -522,7 +522,7 @@ export default function App() {
                 input: {
                   startAdornment: (
                     <InputAdornment position="start">
-                       <SearchIcon sx={{ fontSize: 16, color: "#94a3b8" }} />
+                      <SearchIcon sx={{ fontSize: 16, color: "#94a3b8" }} />
                     </InputAdornment>
                   ),
                   sx: {
@@ -540,7 +540,7 @@ export default function App() {
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             <IconButton sx={{ color: "#64748b" }}>
               <Badge variant="dot" color="primary">
-                 <NotificationsIcon sx={{ fontSize: 18 }} />
+                <NotificationsIcon sx={{ fontSize: 18 }} />
               </Badge>
             </IconButton>
           </Box>
@@ -560,219 +560,219 @@ export default function App() {
           )}
 
           <>
-              <Box
-                sx={{
-                  borderBottom: "1px solid #e2e8f0",
-                  mb: 2,
-                  mt: 0,
-                  display: "flex",
-                  flexDirection: { xs: "column", md: "row" },
-                  justifyContent: "space-between",
-                  alignItems: { xs: "stretch", md: "center" },
-                  gap: 2,
-                  pb: { xs: 1.5, md: 0 }
-                }}
-              >
-                <Box sx={{ display: "flex", gap: 1, overflowX: "auto" }}>
+            <Box
+              sx={{
+                borderBottom: "1px solid #e2e8f0",
+                mb: 2,
+                mt: 0,
+                display: "flex",
+                flexDirection: { xs: "column", md: "row" },
+                justifyContent: "space-between",
+                alignItems: { xs: "stretch", md: "center" },
+                gap: 2,
+                pb: { xs: 1.5, md: 0 }
+              }}
+            >
+              <Box sx={{ display: "flex", gap: 1, overflowX: "auto" }}>
 
-                  <Box
-                    onClick={() => navigate("/list")}
-                    sx={{
-                      px: 2.5,
-                      py: 1.5,
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1,
-                      borderBottom: "2px solid",
-                      borderColor: location.pathname === "/list" ? "#6366f1" : "transparent",
-                      color: location.pathname === "/list" ? "#6366f1" : "#64748b",
-                      fontWeight: location.pathname === "/list" ? 700 : 500,
-                      fontSize: "14.5px",
-                      transition: "all 0.15s ease",
-                      whiteSpace: "nowrap"
-                    }}
-                  >
-                     <ListIcon sx={{ fontSize: 16 }} />
-                    <span>List View</span>
-                  </Box>
-
-                  <Box
-                    onClick={() => navigate("/board")}
-                    sx={{
-                      px: 2.5,
-                      py: 1.5,
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1,
-                      borderBottom: "2px solid",
-                      borderColor: location.pathname === "/board" ? "#6366f1" : "transparent",
-                      color: location.pathname === "/board" ? "#6366f1" : "#64748b",
-                      fontWeight: location.pathname === "/board" ? 700 : 500,
-                      fontSize: "14.5px",
-                      transition: "all 0.15s ease",
-                      whiteSpace: "nowrap"
-                    }}
-                  >
-                     <ViewWeekIcon sx={{ fontSize: 16 }} />
-                    <span>Board View</span>
-                  </Box>
-
+                <Box
+                  onClick={() => navigate("/list")}
+                  sx={{
+                    px: 2.5,
+                    py: 1.5,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    borderBottom: "2px solid",
+                    borderColor: location.pathname === "/list" ? "#6366f1" : "transparent",
+                    color: location.pathname === "/list" ? "#6366f1" : "#64748b",
+                    fontWeight: location.pathname === "/list" ? 700 : 500,
+                    fontSize: "14.5px",
+                    transition: "all 0.15s ease",
+                    whiteSpace: "nowrap"
+                  }}
+                >
+                  <ListIcon sx={{ fontSize: 16 }} />
+                  <span>List View</span>
                 </Box>
 
                 <Box
+                  onClick={() => navigate("/board")}
                   sx={{
+                    px: 2.5,
+                    py: 1.5,
+                    cursor: "pointer",
                     display: "flex",
-                    flexWrap: "wrap",
                     alignItems: "center",
-                    gap: 1.5,
-                    mb: { xs: 1.5, md: "2px" },
-                    mr: { xs: 0, md: 1.5 },
-                    alignSelf: { xs: "flex-start", md: "center" }
+                    gap: 1,
+                    borderBottom: "2px solid",
+                    borderColor: location.pathname === "/board" ? "#6366f1" : "transparent",
+                    color: location.pathname === "/board" ? "#6366f1" : "#64748b",
+                    fontWeight: location.pathname === "/board" ? 700 : 500,
+                    fontSize: "14.5px",
+                    transition: "all 0.15s ease",
+                    whiteSpace: "nowrap"
                   }}
                 >
-                  <FormControl size="small" sx={{ minWidth: 120 }}>
-                    <InputLabel id="p-filter-label" sx={{ fontSize: "12px" }}>Priority</InputLabel>
-                    <Select
-                      labelId="p-filter-label"
-                      id="p-filter"
-                      value={priorityFilter}
-                      onChange={(e) => setPriorityFilter(e.target.value)}
-                      label="Priority"
-                      sx={{ borderRadius: "8px", fontSize: "12.5px", height: "34px" }}
-                    >
-                      <MenuItem value="All">All Priorities</MenuItem>
-                      <MenuItem value="Low">Low</MenuItem>
-                      <MenuItem value="Medium">Medium</MenuItem>
-                      <MenuItem value="High">High</MenuItem>
-                    </Select>
-                  </FormControl>
-
-                  <FormControl size="small" sx={{ minWidth: 140 }}>
-                    <InputLabel id="a-filter-label" sx={{ fontSize: "12px" }}>Assignee</InputLabel>
-                    <Select
-                      labelId="a-filter-label"
-                      id="a-filter"
-                      value={assigneeFilter}
-                      onChange={(e) => setAssigneeFilter(e.target.value)}
-                      label="Assignee"
-                      sx={{ borderRadius: "8px", fontSize: "12.5px", height: "34px" }}
-                    >
-                      <MenuItem value="All">All Assignees</MenuItem>
-                      {members.map((name) => (
-                        <MenuItem key={name} value={name}>
-                          {name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-
-                  {(priorityFilter !== "All" || assigneeFilter !== "All" || searchQuery !== "") && (
-                    <Button
-                      variant="text"
-                      size="small"
-                      onClick={() => {
-                        setPriorityFilter("All");
-                        setAssigneeFilter("All");
-                        setSearchQuery("");
-                        triggerNotification("Cleared all filtered values", "info");
-                      }}
-                      sx={{ textTransform: "none", color: "#6366f1", fontWeight: 700, fontSize: "12px", p: 0 }}
-                    >
-                      Reset
-                    </Button>
-                  )}
-
-                  <Typography variant="caption" sx={{ color: "#94a3b8", fontWeight: 600, fontSize: "11px", ml: 1, display: { xs: "none", lg: "inline" } }}>
-                    ({filteredTasks.length}/{tasks.length} tasks)
-                  </Typography>
+                  <ViewWeekIcon sx={{ fontSize: 16 }} />
+                  <span>Board View</span>
                 </Box>
+
               </Box>
 
               <Box
                 sx={{
-                  display: "grid",
-                  gridTemplateColumns: { xs: "repeat(2, 1fr)", sm: "repeat(4, 1fr)" },
+                  display: "flex",
+                  flexWrap: "wrap",
+                  alignItems: "center",
                   gap: 1.5,
-                  mb: 3
+                  mb: { xs: 1.5, md: "2px" },
+                  mr: { xs: 0, md: 1.5 },
+                  alignSelf: { xs: "flex-start", md: "center" }
                 }}
               >
-                {[
-                  { label: "Total Tasks", count: tasks.length, color: "#6366f1", bg: "#eef2ff" },
-                  { label: "In Progress", count: tasks.filter(t => t.status === "In Progress").length, color: "#ca8a04", bg: "#fef9c3" },
-                  { label: "Overdue", count: tasks.filter(t => isTaskOverdue(t.dueDate, t.status)).length, color: "#ef4444", bg: "#fee2e2" },
-                  { label: "Completed", count: tasks.filter(t => t.status === "Completed" || t.status === "Launched").length, color: "#16a34a", bg: "#dcfce7" }
-                ].map((stat, idx) => (
+                <FormControl size="small" sx={{ minWidth: 120 }}>
+                  <InputLabel id="p-filter-label" sx={{ fontSize: "12px" }}>Priority</InputLabel>
+                  <Select
+                    labelId="p-filter-label"
+                    id="p-filter"
+                    value={priorityFilter}
+                    onChange={(e) => setPriorityFilter(e.target.value)}
+                    label="Priority"
+                    sx={{ borderRadius: "8px", fontSize: "12.5px", height: "34px" }}
+                  >
+                    <MenuItem value="All">All Priorities</MenuItem>
+                    <MenuItem value="Low">Low</MenuItem>
+                    <MenuItem value="Medium">Medium</MenuItem>
+                    <MenuItem value="High">High</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <FormControl size="small" sx={{ minWidth: 140 }}>
+                  <InputLabel id="a-filter-label" sx={{ fontSize: "12px" }}>Assignee</InputLabel>
+                  <Select
+                    labelId="a-filter-label"
+                    id="a-filter"
+                    value={assigneeFilter}
+                    onChange={(e) => setAssigneeFilter(e.target.value)}
+                    label="Assignee"
+                    sx={{ borderRadius: "8px", fontSize: "12.5px", height: "34px" }}
+                  >
+                    <MenuItem value="All">All Assignees</MenuItem>
+                    {members.map((name) => (
+                      <MenuItem key={name} value={name}>
+                        {name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                {(priorityFilter !== "All" || assigneeFilter !== "All" || searchQuery !== "") && (
+                  <Button
+                    variant="text"
+                    size="small"
+                    onClick={() => {
+                      setPriorityFilter("All");
+                      setAssigneeFilter("All");
+                      setSearchQuery("");
+                      triggerNotification("Cleared all filtered values", "info");
+                    }}
+                    sx={{ textTransform: "none", color: "#6366f1", fontWeight: 700, fontSize: "12px", p: 0 }}
+                  >
+                    Reset
+                  </Button>
+                )}
+
+                <Typography variant="caption" sx={{ color: "#94a3b8", fontWeight: 600, fontSize: "11px", ml: 1, display: { xs: "none", lg: "inline" } }}>
+                  ({filteredTasks.length}/{tasks.length} tasks)
+                </Typography>
+              </Box>
+            </Box>
+
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: { xs: "repeat(2, 1fr)", sm: "repeat(4, 1fr)" },
+                gap: 1.5,
+                mb: 3
+              }}
+            >
+              {[
+                { label: "Total Tasks", count: tasks.length, color: "#6366f1", bg: "#eef2ff" },
+                { label: "In Progress", count: tasks.filter(t => t.status === "In Progress").length, color: "#ca8a04", bg: "#fef9c3" },
+                { label: "Overdue", count: tasks.filter(t => isTaskOverdue(t.dueDate, t.status)).length, color: "#ef4444", bg: "#fee2e2" },
+                { label: "Completed", count: tasks.filter(t => t.status === "Completed" || t.status === "Launched").length, color: "#16a34a", bg: "#dcfce7" }
+              ].map((stat, idx) => (
+                <Box
+                  key={idx}
+                  sx={{
+                    py: 1,
+                    px: 1.5,
+                    borderRadius: "10px",
+                    bgcolor: stat.bg,
+                    border: "1px solid",
+                    borderColor: `${stat.color}20`,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 0.25
+                  }}
+                >
+                  <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 600, fontSize: "11px" }}>
+                    {stat.label}
+                  </Typography>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 800, color: stat.color, fontFamily: "Space Grotesk, sans-serif", fontSize: "18px", lineHeight: 1.2 }}>
+                    {stat.count}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+
+            {isLoading ? (
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}>
+                {Array.from({ length: 5 }).map((_, i) => (
                   <Box
-                    key={idx}
+                    key={i}
                     sx={{
-                      py: 1,
-                      px: 1.5,
-                      borderRadius: "10px",
-                      bgcolor: stat.bg,
-                      border: "1px solid",
-                      borderColor: `${stat.color}20`,
+                      p: 2,
+                      borderRadius: "12px",
+                      border: "1px solid #e2e8f0",
+                      bgcolor: "#ffffff",
                       display: "flex",
                       flexDirection: "column",
-                      gap: 0.25
+                      gap: 1
                     }}
                   >
-                    <Typography variant="caption" sx={{ color: "#64748b", fontWeight: 600, fontSize: "11px" }}>
-                      {stat.label}
-                    </Typography>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 800, color: stat.color, fontFamily: "Space Grotesk, sans-serif", fontSize: "18px", lineHeight: 1.2 }}>
-                      {stat.count}
-                    </Typography>
+                    <Skeleton variant="text" width="40%" height={24} />
+                    <Skeleton variant="text" width="80%" height={20} />
+                    <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
+                      <Skeleton variant="text" width="20%" height={20} />
+                      <Skeleton variant="circular" width={24} height={24} />
+                    </Box>
                   </Box>
                 ))}
               </Box>
-
-              {isLoading ? (
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}>
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Box
-                      key={i}
-                      sx={{
-                        p: 2,
-                        borderRadius: "12px",
-                        border: "1px solid #e2e8f0",
-                        bgcolor: "#ffffff",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 1
-                      }}
-                    >
-                      <Skeleton variant="text" width="40%" height={24} />
-                      <Skeleton variant="text" width="80%" height={20} />
-                      <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
-                        <Skeleton variant="text" width="20%" height={20} />
-                        <Skeleton variant="circular" width={24} height={24} />
-                      </Box>
-                    </Box>
-                  ))}
-                </Box>
-              ) : (
-                <Routes>
-                  <Route path="/" element={<Navigate to="/list" replace />} />
-                  <Route path="/list" element={
-                    <TaskList
-                      tasks={filteredTasks}
-                      onEdit={handleOpenEditModal}
-                      onDelete={handleRequestDelete}
-                    />
-                  } />
-                  <Route path="/board" element={
-                    <TaskBoardView
-                      tasks={filteredTasks}
-                      onEdit={handleOpenEditModal}
-                      onDelete={handleRequestDelete}
-                      onUpdateStatus={handleUpdateTaskStatus}
-                      onAddTaskToStatus={handleOpenAddModalWithStatus}
-                    />
-                  } />
-                </Routes>
-              )}
+            ) : (
+              <Routes>
+                <Route path="/" element={<Navigate to="/list" replace />} />
+                <Route path="/list" element={
+                  <TaskList
+                    tasks={filteredTasks}
+                    onEdit={handleOpenEditModal}
+                    onDelete={handleRequestDelete}
+                  />
+                } />
+                <Route path="/board" element={
+                  <TaskBoardView
+                    tasks={filteredTasks}
+                    onEdit={handleOpenEditModal}
+                    onDelete={handleRequestDelete}
+                    onUpdateStatus={handleUpdateTaskStatus}
+                    onAddTaskToStatus={handleOpenAddModalWithStatus}
+                  />
+                } />
+              </Routes>
+            )}
 
           </>
 
